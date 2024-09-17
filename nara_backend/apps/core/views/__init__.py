@@ -1,27 +1,19 @@
 """Core models for the Nara backend application."""
 
+from .action_view import ActionViewSet
+from .asset_view import AssetViewSet
 from .auth_views import CognitoLoginView
-from .views import (
-    ActionDetail,
-    ActionList,
-    ApiRoot,
-    AssetDetail,
-    AssetList,
-    ProjectDetail,
-    ProjectList,
-    TaskDetail,
-    TaskList,
-)
+from .project_view import ProjectViewSet
+from .task_view import TaskViewSet
+from .user_view import UserViewSet
+from .views import ApiRoot
 
 __all__ = [
     "CognitoLoginView",
     "ApiRoot",
-    "ProjectList",
-    "ProjectDetail",
-    "ActionList",
-    "ActionDetail",
-    "AssetList",
-    "AssetDetail",
-    "TaskList",
-    "TaskDetail",
+    "ProjectViewSet",
+    "ActionViewSet",
+    "TaskViewSet",
+    "AssetViewSet",
+    "UserViewSet",
 ]
