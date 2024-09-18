@@ -1,10 +1,9 @@
-from rest_framework import viewsets
-
 from apps.core.models import Project
 from apps.core.serializers import ProjectSerializer
+from apps.core.views.base_view import BaseModelViewSet
 
 
-class ProjectViewSet(viewsets.ModelViewSet):
+class ProjectViewSet(BaseModelViewSet):
     name = "project"
     serializer_class = ProjectSerializer
 

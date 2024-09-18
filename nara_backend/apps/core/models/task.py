@@ -25,9 +25,7 @@ class Task(NBaseModel):
         default=list,
     )
 
-    status = models.CharField(
-        max_length=200, choices=TASK_RUNNING_STATUS, default=TASK_RUNNING_STATUS.PENDING
-    )
+    status = models.CharField(max_length=200, choices=TASK_RUNNING_STATUS, default=TASK_RUNNING_STATUS.PENDING)
 
     result_file_url = models.URLField()
 

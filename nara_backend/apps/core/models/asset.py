@@ -34,9 +34,7 @@ class Asset(NBaseModel):
         max_length=200,
         choices=ASSET_UPLOAD_SOURCE,
     )
-    file_type = models.CharField(
-        max_length=200, choices=ASSET_FILE_TYPE, default=ASSET_FILE_TYPE.OTHER
-    )
+    file_type = models.CharField(max_length=200, choices=ASSET_FILE_TYPE, default=ASSET_FILE_TYPE.OTHER)
 
     def __str__(self) -> str:
         return str(self.name)

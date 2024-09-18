@@ -1,20 +1,8 @@
-from django.urls import path
 from rest_framework import routers
 
-from apps.core.views import (
-    ActionViewSet,
-    ApiRoot,
-    AssetViewSet,
-    CognitoLoginView,
-    ProjectViewSet,
-    TaskViewSet,
-    UserViewSet,
-)
+from apps.core.views import ActionViewSet, AssetViewSet, ProjectViewSet, TaskViewSet, UserViewSet
 
-urlpatterns = [
-    path("dj-rest-auth/cognito/", CognitoLoginView.as_view(), name="cognito_login"),
-    path("", ApiRoot.as_view(), name=ApiRoot.name),
-]
+urlpatterns = []
 
 router = routers.SimpleRouter()
 router.register(ProjectViewSet.name, ProjectViewSet, basename=ProjectViewSet.name)

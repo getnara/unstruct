@@ -1,10 +1,9 @@
-from rest_framework import viewsets
-
 from apps.core.models import Action
 from apps.core.serializers import ActionSerializer
+from apps.core.views.base_view import BaseModelViewSet
 
 
-class ActionViewSet(viewsets.ModelViewSet):
+class ActionViewSet(BaseModelViewSet):
     name = "action"
     serializer_class = ActionSerializer
 

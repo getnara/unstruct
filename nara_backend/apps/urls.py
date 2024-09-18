@@ -18,9 +18,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+from apps.core.views import ApiRoot, CognitoLoginView
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("dj-rest-auth/", include("dj_rest_auth.urls")),
     path("accounts/", include("allauth.urls")),
-    path("", include("apps.core.urls")),
+    path("core/", include("apps.core.urls")),
+    path("dj-rest-auth/cognito/", CognitoLoginView.as_view(), name="cognito_login"),
+    path("", ApiRoot.as_view(), name=ApiRoot.name),
 ]

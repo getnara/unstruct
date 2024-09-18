@@ -1,10 +1,9 @@
-from rest_framework import viewsets
-
 from apps.core.models import User
 from apps.core.serializers import UserSerializer
+from apps.core.views.base_view import BaseModelViewSet
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(BaseModelViewSet):
     name = "user"
     serializer_class = UserSerializer
 

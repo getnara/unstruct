@@ -18,12 +18,8 @@ class AGENT_TYPE(models.TextChoices):
 class Action(NBaseModel):
     name = models.CharField(max_length=200)
     task = models.ForeignKey(Task, blank=False, on_delete=models.DO_NOTHING)
-    action_type = models.CharField(
-        max_length=200, choices=ACTION_TYPE, default=ACTION_TYPE.EXTRACTION
-    )
-    agent_type = models.CharField(
-        max_length=200, choices=AGENT_TYPE, default=AGENT_TYPE.GPT_4O
-    )
+    action_type = models.CharField(max_length=200, choices=ACTION_TYPE, default=ACTION_TYPE.EXTRACTION)
+    agent_type = models.CharField(max_length=200, choices=AGENT_TYPE, default=AGENT_TYPE.GPT_4O)
     agent_metadata = models.JSONField(blank=True, default=dict)
 
     def __str__(self):
