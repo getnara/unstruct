@@ -36,7 +36,9 @@ SECRET_KEY = env("SECRET_KEY")
 # Application definition
 
 NARA_APPS = [
+    "apps.common",
     "apps.core",
+    "apps.agent_management",
 ]
 
 INSTALLED_APPS = [
