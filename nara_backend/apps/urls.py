@@ -25,6 +25,7 @@ urlpatterns = [
     path("dj-rest-auth/", include("dj_rest_auth.urls")),
     path("accounts/", include("allauth.urls")),
     path("core/", include("apps.core.urls")),
+    path("agent_management/", include("apps.agent_management.urls")),
     path("dj-rest-auth/cognito/", CognitoLoginView.as_view(), name="cognito_login"),
     path("", ApiRoot.as_view(), name=ApiRoot.name),
 ]

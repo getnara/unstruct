@@ -1,9 +1,8 @@
-from rest_framework import serializers
-
+from apps.common.serializers import NBaseSerializer
 from apps.core.models import Project
 
 
-class ProjectSerializer(serializers.ModelSerializer):
+class ProjectSerializer(NBaseSerializer):
     class Meta:
         model = Project
         fields = "__all__"

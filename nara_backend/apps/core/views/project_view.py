@@ -1,9 +1,9 @@
+from apps.common.views import NBaselViewSet
 from apps.core.models import Project
 from apps.core.serializers import ProjectSerializer
-from apps.core.views.base_view import BaseModelViewSet
 
 
-class ProjectViewSet(BaseModelViewSet):
+class ProjectViewSet(NBaselViewSet):
     name = "project"
     serializer_class = ProjectSerializer
 

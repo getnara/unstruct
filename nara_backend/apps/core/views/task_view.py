@@ -1,9 +1,9 @@
+from apps.common.views import NBaselViewSet
 from apps.core.models import Task
 from apps.core.serializers import TaskSerializer
-from apps.core.views.base_view import BaseModelViewSet
 
 
-class TaskViewSet(BaseModelViewSet):
+class TaskViewSet(NBaselViewSet):
     name = "task"
     serializer_class = TaskSerializer
 

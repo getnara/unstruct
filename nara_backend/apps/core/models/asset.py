@@ -1,7 +1,9 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from llama_index.readers.pdf_marker import PDFMarkerReader
 
-from .base import NBaseModel
+from apps.common.models import NBaseWithOwnerModel
+
 from .project import Project
 
 
@@ -19,7 +21,7 @@ class ASSET_FILE_TYPE(models.TextChoices):
     OTHER = "OTHER", _("Other")
 
 
-class Asset(NBaseModel):
+class Asset(NBaseWithOwnerModel):
     """Represents a asset in the system."""
 
     name = models.CharField(max_length=200)
@@ -38,3 +40,7 @@ class Asset(NBaseModel):
 
     def __str__(self) -> str:
         return str(self.name)
+
+    def get_document_from_asset(self):
+        reader = PDFMarkerReader()
+        return reader.load_data(path=self.file.path)

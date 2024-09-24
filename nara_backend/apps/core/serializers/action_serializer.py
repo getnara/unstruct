@@ -1,9 +1,8 @@
-from rest_framework import serializers
-
+from apps.common.serializers import NBaseSerializer
 from apps.core.models import Action
 
 
-class ActionSerializer(serializers.ModelSerializer):
+class ActionSerializer(NBaseSerializer):
     class Meta:
         model = Action
         fields = "__all__"

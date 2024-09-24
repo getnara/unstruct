@@ -12,22 +12,24 @@ class NBaseModelManager(models.Manager):
 
 class NBaseModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    is_deleted = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
-        related_name="%(class)s_created",
+        blank=True,
+        related_name="%(class)s_created_by",
     )
     updated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
-        related_name="%(class)s_updated",
+        blank=True,
+        related_name="%(class)s_updated_by",
     )
-    is_deleted = models.BooleanField(default=False)
-    deleted_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         abstract = True
@@ -48,3 +50,15 @@ class NBaseModel(models.Model):
         if user:
             self.updated_by = user
         self.save()
+
+
+class NBaseWithOwnerModel(NBaseModel):
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="%(class)s_owner",
+    )
+
+    class Meta:
+        abstract = True

@@ -1,18 +1,19 @@
 from django.conf import settings
 from django.db import models
 
-from .base import NBaseModel
+from apps.common.models import NBaseWithOwnerModel
 
 
-class Project(NBaseModel):
+class Project(NBaseWithOwnerModel):
     """Represents a project in the system."""
 
     name = models.CharField(max_length=200)
     description = models.TextField()
-    owner = models.ForeignKey(
+    collaborators = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
-        blank=False,
-        on_delete=models.CASCADE,
+        related_name="collaborators",
+        default=list,
+        blank=True,
     )
 
     def __str__(self) -> str:
