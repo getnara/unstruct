@@ -1,46 +1,94 @@
-# nara-backend
-Nara Backend is a Django-based web application that serves as the backend for the Nara project. This README provides an overview of the project structure, key components, and setup instructions.
+# Nara Backend
+
+## Table of Contents
+1. [Project Overview](#project-overview)
+2. [System Architecture](#system-architecture)
+3. [Key Components](#key-components)
+   - [Core App](#core-app)
+   - [Agent Management App](#agent-management-app)
+   - [Common App](#common-app)
+4. [Setup and Installation](#setup-and-installation)
+5. [API Endpoints](#api-endpoints)
+6. [Authentication and Authorization](#authentication-and-authorization)
+7. [Database Models](#database-models)
+8. [AI Integration](#ai-integration)
+9. [Best Practices](#best-practices)
+10. [FAQ](#faq)
 
 ## Project Overview
 
-Nara Backend is built using Django, a high-level Python web framework. The project follows Django's best practices and conventions, including the use of apps for modular structure and the Model-View-Template (MVT) pattern.
+Nara Backend is a Django-based REST API that serves as the backbone for an AI-powered document processing and task management system. The project is designed to handle various aspects of document analysis, task creation, and AI-driven information extraction.
 
-### Key Features
+The main purpose of this backend is to:
+1. Manage projects, tasks, and assets (documents)
+2. Integrate with AI services for document analysis
+3. Provide a robust API for frontend applications to interact with the system
+4. Handle user authentication and authorization
 
-- **Asset Management**: Manages various types of assets (documents, files) associated with projects and provides an extraction interface to extract texts from various sources.
+## System Architecture
 
-## Project Structure
+The Nara Backend is built using Django and Django Rest Framework, following a modular approach with multiple apps:
 
-The project is organized into several Django apps, each responsible for specific functionality:
+- `core`: Handles the main business logic and models
+- `agent_management`: Manages AI agent configurations and services
+- `common`: Provides shared utilities and base models
 
-- `agent_management`: Handles AI agent-related operations.
-- `core`: Contains core models essential for the application like `Asset`, `Project`, etc.
-- `common`: Contains common models and functionalities shared across the project.
+The project uses a PostgreSQL database for data persistence and integrates with external AI services for document processing.
 
-### Key Components
+## Key Components
 
-1. **Models**:
-   - `Asset`: Represents various file types (PDF, DOC, TXT) associated with projects.
-   - `Project`: Manages project-related data.
-   - `Task`: Represents a task that can be performed on an asset.
-   - `Action`: Represents an action that can be performed on an asset.
+### Core App
 
-2. **Services**:
-   - `BaseAgentService`: Abstract base class for AI agent services.
-   - `BaseVectorStore`: Abstract base class for vector storage implementations.
+The `core` app is the heart of the Nara Backend, containing the main models and business logic:
+
+- `Project`: Represents a collection of tasks and assets
+- `Task`: Represents a specific job to be performed on assets
+- `Asset`: Represents a document or file to be processed
+- `Action`: Defines the types of actions that can be performed on assets
+
+Key files:
+- `apps/core/models/`: Contains the main data models
+- `apps/core/views/`: Contains the API views for CRUD operations
+- `apps/core/serializers/`: Defines how models are serialized for API responses
+
+### Agent Management App
+
+The `agent_management` app handles the integration with AI services and manages AI model configurations:
+
+- `ModelConfiguration`: Stores settings for different AI models
+- `BaseAgentService`: Abstract base class for AI agent services
+- `OpenAIDataService`: Concrete implementation for OpenAI integration
+
+Key files:
+- `apps/agent_management/models/model_configuration.py`: Defines the AI model configuration
+- `apps/agent_management/services/base_agent_service.py`: Abstract base class for AI services
+- `apps/agent_management/services/open_ai_data_service.py`: OpenAI integration
+
+### Common App
+
+The `common` app provides shared functionality across the project:
+
+- `NBaseModel`: Base model with common fields like created_at, updated_at
+- `NBaseSerializer`: Base serializer for consistent API responses
+- `NBaselViewSet`: Base viewset with common CRUD operations
+
+Key files:
+- `apps/common/models/base_model.py`: Defines the base model classes
+- `apps/common/serializers/base_serializer.py`: Defines the base serializer
+- `apps/common/views/base_view.py`: Defines the base viewset
 
 ## Setup and Installation
 
 1. Clone the repository:
    ```
-   git clone git@github.com:getnara/nara-backend.git
-   cd nara-backend
+   git clone <repository_url>
+   cd nara_backend
    ```
 
-2. Set up a virtual environment:
+2. Create and activate a virtual environment:
    ```
    python -m venv venv
-   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
    ```
 
 3. Install dependencies:
@@ -48,26 +96,102 @@ The project is organized into several Django apps, each responsible for specific
    pip install -r requirements.txt
    ```
 
-4. Create migrations and run the server:
+4. Set up the environment variables:
+   - Copy `.env.sample` to `.env`
+   - Fill in the required variables in `.env`
+
+5. Run migrations:
    ```
-   make sure you are in nara_backend directory of the repo
-   chmod +x ./scripts/run_server.sh
-   ./scripts/run_server.sh
+   python manage.py migrate
    ```
 
+6. Start the development server:
+   ```
+   python manage.py runserver
+   ```
 
-## Development Guidelines
+## API Endpoints
 
-- Follow PEP 8 and Django coding style guidelines.
-- Use Django's ORM for database operations.
-- Implement proper error handling and validation.
-- Write unit tests for new features and bug fixes.
-- Use Django's built-in security features and best practices.
+The main API endpoints are:
 
-## Contributing
+- `/core/projects/`: CRUD operations for projects
+- `/core/tasks/`: CRUD operations for tasks
+- `/core/assets/`: CRUD operations for assets
+- `/core/actions/`: CRUD operations for actions
+- `/agent_management/model_configuration/`: CRUD operations for AI model configurations
 
-Please read the CONTRIBUTING.md file for details on our code of conduct and the process for submitting pull requests.
+For detailed API documentation, refer to the Django Rest Framework browsable API interface available at the root URL when running the development server.
 
-## License
+## Authentication and Authorization
 
-This project is licensed under the Apache License 2.0 - see the LICENSE.md file for details.
+The project uses Django's built-in authentication system along with Django Rest Framework's token authentication. It also integrates with Amazon Cognito for social authentication.
+
+Key files:
+- `apps/core/views/auth_views.py`: Contains the `CognitoLoginView` for Cognito integration
+- `config/settings/base.py`: Contains authentication-related settings
+
+To authenticate:
+1. Obtain a token using the `/dj-rest-auth/login/` endpoint
+2. Include the token in the `Authorization` header of subsequent requests:
+   ```
+   Authorization: Token <your_token_here>
+   ```
+
+## Database Models
+
+The main models in the system are:
+
+1. `User`: Extends Django's AbstractUser model
+2. `Project`: Represents a collection of tasks and assets
+3. `Task`: Represents a specific job to be performed
+4. `Asset`: Represents a document or file to be processed
+5. `Action`: Defines types of actions that can be performed
+6. `ModelConfiguration`: Stores AI model configurations
+
+All models inherit from `NBaseModel` or `NBaseWithOwnerModel`, which provide common fields like `created_at`, `updated_at`, and `owner`.
+
+## AI Integration
+
+The AI integration is handled primarily through the `agent_management` app:
+
+1. `BaseAgentService`: Defines the interface for AI services
+2. `OpenAIDataService`: Implements the OpenAI integration
+
+To use the AI service:
+```
+python
+from apps.agent_management.services.open_ai_data_service import OpenAIDataService
+service = OpenAIDataService(openai_api_key="your_api_key")
+result = service.extract_response_from_task(task)
+
+```
+
+
+## Best Practices
+
+1. Always use environment variables for sensitive information (e.g., API keys, database credentials).
+2. Follow the DRY (Don't Repeat Yourself) principle by using base classes like `NBaseModel` and `NBaselViewSet`.
+3. Use Django's built-in features for security, such as CSRF protection and password hashing.
+4. Write unit tests for critical functionality, especially in the `core` app.
+5. Use Django's migration system for all database schema changes.
+6. Follow PEP 8 style guide for Python code. The project uses tools like Black and isort to maintain consistency.
+
+## FAQ
+
+Q: How do I add a new API endpoint?
+A: Create a new view in the appropriate app's `views.py` file, then add the URL to the app's `urls.py` file.
+
+Q: How do I integrate a new AI service?
+A: Create a new class that inherits from `BaseAgentService` in the `agent_management` app, implementing the required methods.
+
+Q: How do I handle file uploads for assets?
+A: Use the `create_assets_for_project` method in `AssetViewSet`, which handles file uploads and creates Asset objects.
+
+Q: How can I customize the user model?
+A: The project uses a custom User model defined in `apps/core/models/user.py`. Extend this model as needed.
+
+Q: How do I run tests?
+A: Use the command `python manage.py test` to run all tests. You can specify an app name to run tests for a specific app.
+
+Q: How do I deploy the project?
+A: The project includes a Dockerfile and docker-compose.yml for containerization. For production, consider using a platform like AWS Elastic Beanstalk or Heroku.
