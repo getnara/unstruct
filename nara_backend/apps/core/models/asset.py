@@ -43,4 +43,4 @@ class Asset(NBaseWithOwnerModel):
 
     def get_document_from_asset(self):
         reader = PDFMarkerReader()
-        return reader.load_data(path=self.file.path)
+        return reader.load_data(path=self.file.path).to_langchain_format()
