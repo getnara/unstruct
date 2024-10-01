@@ -60,6 +60,7 @@ INSTALLED_APPS = [
 ] + NARA_APPS
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -264,3 +265,8 @@ LOGGING = {
 # Add these configurations
 AI_MODEL = "OpenAI"  # or other models when integrated
 OPENAI_API_KEY = "your-openai-api-key"
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_METHODS = ['*']
+CORS_ALLOW_HEADERS = ['*']

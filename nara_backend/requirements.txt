@@ -104,3 +104,4 @@ virtualenv==20.26.4
 wcwidth==0.2.13
 wrapt==1.16.0
 yarl==1.12.1
+django-cors-headers==4.4.0
