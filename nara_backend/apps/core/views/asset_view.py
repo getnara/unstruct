@@ -4,10 +4,10 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from apps.common.views import NBaselViewSet
-from apps.core.models import Asset
+from apps.core.models import Asset, Project
 from apps.core.models.asset import ASSET_UPLOAD_SOURCE
 from apps.core.serializers import AssetSerializer
-
+from apps.core.models.asset import ASSET_FILE_TYPE
 
 class AssetViewSet(NBaselViewSet):
     name = "asset"

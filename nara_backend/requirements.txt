@@ -42,10 +42,11 @@ jiter==0.5.0
 joblib==1.4.2
 jsonpatch==1.33
 jsonpointer==3.0.0
-langchain-core==0.3.6
-langchain-openai==0.2.0
+langchain==0.3.2
+langchain-community==0.3.1
+langchain-core==0.3.9
 langsmith==0.1.128
-llama-index-core==0.11.13.post1
+llama-index-core==0.11.16
 llama-index-readers-pdf-marker==0.2.0
 marker-pdf==0.2.17
 MarkupSafe==2.1.5
@@ -105,3 +106,5 @@ wcwidth==0.2.13
 wrapt==1.16.0
 yarl==1.12.1
 django-cors-headers==4.4.0
+llama-index-readers-smart-pdf-loader==0.2.0
+llama-parse==0.5.7

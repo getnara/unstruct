@@ -2,11 +2,12 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from apps.agent_management.services.task_processor import TaskProcessor
 from apps.core.models import Task
-
+from apps.agent_management.services.task_processor import TaskProcessor
 
 class TaskProcessingViewSet(viewsets.ViewSet):
+    name = "tasks"
+
     @action(detail=True, methods=["post"], url_path="process")
     def process_task(self, request, pk=None):
         try:

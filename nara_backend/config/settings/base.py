@@ -264,7 +264,7 @@ LOGGING = {
 
 # Add these configurations
 AI_MODEL = "OpenAI"  # or other models when integrated
-OPENAI_API_KEY = "your-openai-api-key"
+OPENAI_API_KEY = env("OPENAI_API_KEY")
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True

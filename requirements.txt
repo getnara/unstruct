@@ -104,3 +104,5 @@ virtualenv==20.26.4
 wcwidth==0.2.13
 wrapt==1.16.0
 yarl==1.12.1
+boto3==1.35.34
+botocore==1.35.34

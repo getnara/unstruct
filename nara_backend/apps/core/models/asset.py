@@ -1,11 +1,15 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from llama_index.readers.pdf_marker import PDFMarkerReader
+from llama_parse import LlamaParse
+import nest_asyncio
+import os
+from apps.common.utils.s3_utils import download_from_s3
 
 from apps.common.models import NBaseWithOwnerModel
 
 from .project import Project
 
+nest_asyncio.apply()
 
 class ASSET_UPLOAD_SOURCE(models.TextChoices):
     UPLOAD = "UPLOAD", _("Upload")
@@ -42,5 +46,23 @@ class Asset(NBaseWithOwnerModel):
         return str(self.name)
 
     def get_document_from_asset(self):
-        reader = PDFMarkerReader()
-        return reader.load_data(path=self.file.path).to_langchain_format()
+        # Define a local path to save the downloaded file
+        local_path = f"/tmp/{self.name}"
+
+        # Download the file from S3
+        download_from_s3(self.url, local_path) 
+
+        # Load the document using LlamaParse
+        parser = LlamaParse(
+            api_key=os.getenv("LLAMA_CLOUD_API_KEY"),  # Ensure this is set in your environment
+            result_type="text",  # or "markdown"
+            verbose=True,
+        )
+        documents = parser.load_data(local_path)
+        
+        # Concatenate text from all document parts
+        full_text = ""
+        for doc in documents:
+            full_text += doc.get_text()  # or doc.text, depending on the correct method/attribute
+        
+        return full_text
