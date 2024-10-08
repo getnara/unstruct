@@ -75,9 +75,7 @@ class OpenAIAgentService(BaseAgentService):
                 action_results = []
                 for asset in task.assets.all():
                     prompt = self.construct_extraction_prompt(field_name, description, asset)
-                    print(prompt)
                     response = self.llm.invoke(prompt)  # Use invoke instead of __call__
-                    print(response)
                     parsed_response = self.parse_response(response.content)  # Access the content attribute
                     action_results.append(
                         {
@@ -118,7 +116,7 @@ class OpenAIAgentService(BaseAgentService):
                 description=description,
                 document=document
             )
-            print("Prompt template:", prompt)
+            #print("Prompt template:", prompt)
             return prompt.to_string()  # Convert PromptValue to string
         except Exception as e:
             print(f"Error constructing extraction prompt: {e}")

@@ -1,9 +1,11 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from llama_parse import LlamaParse
-from llama_index.readers.smart_pdf_loader import SmartPDFLoader
 import nest_asyncio
 import os
+import concurrent.futures
+from typing import List, Generator
+
 from apps.common.utils.s3_utils import download_from_s3
 
 from apps.common.models import NBaseWithOwnerModel
@@ -11,8 +13,6 @@ from apps.common.models import NBaseWithOwnerModel
 from .project import Project
 
 nest_asyncio.apply()
-
-LLMSHERPA_API_URL = "https://readers.llmsherpa.com/api/document/developer/parseDocument?renderFormat=all"
 
 class ASSET_UPLOAD_SOURCE(models.TextChoices):
     UPLOAD = "UPLOAD", _("Upload")
@@ -55,22 +55,25 @@ class Asset(NBaseWithOwnerModel):
         # Download the file from S3
         download_from_s3(self.url, local_path) 
 
-        #Load the document using LlamaParse
+        # Load the document using LlamaParse
         parser = LlamaParse(
             api_key=os.getenv("LLAMA_CLOUD_API_KEY"),  # Ensure this is set in your environment
-            result_type="markdown",  # or "markdown"
+            result_type="text",  # or "markdown"
             verbose=True,
             gpt4o_mode=True,
             gpt4o_api_key=os.getenv("OPENAI_API_KEY")
         )
-        # pdf_loader = SmartPDFLoader(llmsherpa_api_url=LLMSHERPA_API_URL)
-        # documents = pdf_loader.load_data(local_path)
-
         documents = parser.load_data(local_path)
         
-        # Concatenate text from all document parts
-        full_text = ""
-        for doc in documents:
-            full_text += doc.get_text()  # or doc.text, depending on the correct method/attribute
-        
-        return full_text
+        return self.concatenate_documents_fast(documents)
+    
+    def concatenate_documents_fast(self, documents: List) -> str:
+        # Use list comprehension and join for faster concatenation
+        return ''.join(doc.get_text() for doc in documents)
+    
+    def concatenate_documents_parallel(self, documents: List) -> str:   
+        # Use multiprocessing for parallel processing
+        with concurrent.futures.ProcessPoolExecutor() as executor:
+            texts = list(executor.map(lambda doc: doc.get_text(), documents))
+        return ''.join(texts)
+    
