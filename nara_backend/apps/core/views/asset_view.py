@@ -8,6 +8,8 @@ from apps.core.models import Asset, Project
 from apps.core.models.asset import ASSET_UPLOAD_SOURCE
 from apps.core.serializers import AssetSerializer
 from apps.core.models.asset import ASSET_FILE_TYPE
+from apps.agent_management.services.ai_service.vector_store import VectorStore
+
 
 class AssetViewSet(NBaselViewSet):
     name = "asset"
@@ -18,6 +20,8 @@ class AssetViewSet(NBaselViewSet):
 
     @action(detail=False, methods=["post"])
     def create_assets_for_project(self, request):
+        return Response("", status="400")
+        print("called here")
         files = request.FILES.getlist("files")
         project_id = request.data.get("project_id")
 
@@ -60,5 +64,15 @@ class AssetViewSet(NBaselViewSet):
             return ASSET_FILE_TYPE.DOC
         elif extension == "txt":
             return ASSET_FILE_TYPE.TXT
+        elif extension == 'mp4':
+            return ASSET_FILE_TYPE.MP4
+        elif extension == 'jpeg':
+            return ASSET_FILE_TYPE.JPEG
+        elif extension == 'jpg':
+            return ASSET_FILE_TYPE.JPG
+        elif extension == 'png':
+            return ASSET_FILE_TYPE.PNG
+        elif extension == 'mp3':
+            return ASSET_FILE_TYPE.MP3
         else:
             return ASSET_FILE_TYPE.OTHER
