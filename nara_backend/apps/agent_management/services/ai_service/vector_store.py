@@ -1,7 +1,7 @@
 import os
 import uuid
 
-import chromadb
+
 import numpy as np
 from langchain_community.vectorstores import LanceDB
 
