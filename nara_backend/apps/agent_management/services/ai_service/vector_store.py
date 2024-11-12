@@ -131,10 +131,13 @@ def get_audio_from_video(video_path):
     audio_clip = video_clip.audio
 
     # Write the audio to a separate file
-    audio_clip.write_audiofile(mp3_file)
+    try:
+        audio_clip.write_audiofile(mp3_file)
 
-    # Close the video and audio clips
-    audio_clip.close()
+        # Close the video and audio clips
+        audio_clip.close()
+    except:
+        pass
     video_clip.close()
 
     print("Audio extraction successful!")
@@ -193,6 +196,7 @@ def transcribe(audio_file):
 
     except Exception as e:
         print(f"Exception: {e}")
+    return ""
 
 
 
