@@ -90,21 +90,10 @@ class Asset(NBaseWithOwnerModel):
 
 
     def get_document_from_asset(self):
-        # Define a local path to save the downloaded file
         local_path = f"/tmp/{self.name}"
-        # Download the file from S3
-        download_from_s3(self.url, local_path) 
-        # Load the document using LlamaParse
-        parser = LlamaParse(
-            api_key=os.getenv("LLAMA_CLOUD_API_KEY"),  # Ensure this is set in your environment
-            result_type="text",  # or "markdown"
-            verbose=True,
-            gpt4o_mode=True,
-            gpt4o_api_key=os.getenv("OPENAI_API_KEY")
-        )
-        documents = parser.load_data(local_path)
-
-        return self.concatenate_documents_fast(documents)
+        if not os.path.exists(local_path):
+            download_from_s3(self.url, local_path) 
+        return local_path
     
     def concatenate_documents_fast(self, documents: List) -> str:
         # Use list comprehension and join for faster concatenation

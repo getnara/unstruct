@@ -17,6 +17,10 @@ from PIL import Image
 
 from moviepy.editor import VideoFileClip
 from functools import lru_cache
+from pdf2image import convert_from_path
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import PyPDFLoader
+
 
 def resize_base64_image(base64_string, size=(128, 128)):
     """
@@ -63,7 +67,7 @@ def split_image_text_types(docs):
         if is_base64(doc):
             # Resize image to avoid OAI server error
             images.append(
-                resize_base64_image(doc, size=(250, 250))
+                doc#resize_base64_image(doc, size=(250, 250))
             )  # base64 encoded str
         else:
             text.append(doc)
@@ -95,7 +99,7 @@ def get_images_from_video(video_path, output_dir='/tmp'):
     
     frame_paths = []
     frame_count = 0
-    name = video_path.split('.')[0]
+    name = os.path.basename(video_path)
    
     while True:
         success, frame = video.read()
@@ -120,9 +124,9 @@ def get_images_from_video(video_path, output_dir='/tmp'):
     return frame_paths
 
 @lru_cache(maxsize=None)
-def get_audio_from_video(video_path):
-    name = video_path.split('.')[0]
-    mp3_file = f"{name}.mp3"
+def get_audio_from_video(video_path,  output_dir='/tmp'):
+    name = os.path.basename(video_path)
+    mp3_file = os.path.join(output_dir, f"{name}.mp3")
 
     # Load the video clip
     video_clip = VideoFileClip(video_path)
@@ -143,6 +147,26 @@ def get_audio_from_video(video_path):
     print("Audio extraction successful!")
     return mp3_file
 # Create chroma
+
+def get_images_from_document(doc_path,  output_dir='/tmp'):
+    images = convert_from_path(doc_path)
+    if not images or len(images) == 0:
+        return []
+    
+
+    name = os.path.basename(doc_path)
+
+    frame_paths = []
+    for i, image in enumerate(images):
+        image_filename =  os.path.join(output_dir, f"{name}_frame_{i:05d}.jpg")
+        print(image_filename)
+    
+        image.save(image_filename)
+    
+    # Append the file path to the list
+        frame_paths.append(image_filename)
+    
+    return frame_paths
 
 
 import os
@@ -202,8 +226,9 @@ def transcribe(audio_file):
 
 
 class VectorStore:
-    def __init__(self, name, video_path=None) -> None:
-        self.indexed = False
+    def __init__(self, name, video_path=None, image_only=False) -> None:
+        self.indexed_image = False
+        self.indexed_text = False
         self.transcript = ""
     
         self.image_vectorstore = LanceDB(
@@ -215,36 +240,94 @@ class VectorStore:
             table_name=name, embedding=clip_embd,
             uri="/tmp/vdb_texts"
         )
-        if self.image_vectorstore.get_table(name) and self.text_vectorstore.get_table(name):
-            self.indexed = True
+        if self.image_vectorstore.get_table(name):
+            self.indexed_image = True
+        if self.text_vectorstore.get_table(name):
+            self.indexed_text = True
+        if image_only and self.image_vectorstore.get_table(name):
+            self.indexed_image = True
         
 
     def index_video(self, video_path):
-        if self.indexed:
+        if self.indexed_image and self.indexed_text:
             print("already indexed", video_path)
             return
         images = get_images_from_video(video_path=video_path)
         audio_file = get_audio_from_video(video_path)
         self.transcript  = transcribe(audio_file)
-        self.image_vectorstore.add_images(images)
-        self.text_vectorstore.add_texts([self.transcript])
-
-        self.indexed = True
+        
+        if not self.indexed_image:
+            try:
+                self.image_vectorstore.delete(delete_all=True)
+            except:
+                pass
+            self.image_vectorstore.add_images(images)
+            self.indexed_image = True
+        
+        if not self.indexed_text:
+            self.text_vectorstore.add_texts([self.transcript])
+            self.indexed_text = True
 
     def index_audio(self, audio_path):
-        if self.indexed:
+        if self.indexed_text:
             print("already indexed", audio_path)
             return
         
         self.transcript  = transcribe(audio_path)
-        self.text_vectorstore.add_texts([self.transcript])
-        self.indexed = True
+        if not self.indexed_text:
+            self.text_vectorstore.add_texts([self.transcript])
+            self.indexed_text = True
 
     def index_images(self, images):
-        self.image_vectorstore.add_images(images)
+        if not self.indexed_image:
+            try:
+                self.image_vectorstore.delete(delete_all=True)
+            except:
+                pass
+            self.image_vectorstore.add_images(images)
+            self.indexed_image = True
+
+    def index_document(self, doc_path):
+        error = None
+        if self.indexed_image and self.indexed_text:
+            print("already indexed", doc_path)
+            return
+        try:
+            images = get_images_from_document(doc_path=doc_path)
+            if not self.indexed_image:
+                try:
+                    self.image_vectorstore.delete(delete_all=True)
+                except:
+                    pass
+                self.image_vectorstore.add_images(images)
+                self.indexed_image = True
+        except:
+            error = True
+
+        try:
+            loader = PyPDFLoader(doc_path)
+
+            docs = loader.load()
+            print(len(docs))
+
+            text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+            splits = text_splitter.split_documents(docs)
+            if not self.indexed_text:
+                self.text_vectorstore.add_documents(
+                    documents=splits
+                )
+                self.indexed_text = True
+        except:
+            error = True
+        if not error:
+            self.indexed_image = True
+            self.indexed_text = True
 
     def invoke(self, query, k=10):
-        data = {}
+        data = {
+            'images': [],
+            'texts': []
+        }
         try:
             results =  self.image_vectorstore.as_retriever().invoke(query, k=k)
             data = split_image_text_types(results)

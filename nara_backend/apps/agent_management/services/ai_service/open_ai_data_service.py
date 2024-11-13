@@ -96,19 +96,49 @@ class DocumentExtractionHandler(ExtractionHandler):
         self.chat_prompt = chat_prompt
 
     def construct_prompt(self, field_name: str, description: str, asset: Asset) -> str:
-        document = asset.get_document_from_asset()
-        if not field_name or not description or not document:
-            raise ValueError("Field name, description, or document content is empty.")
+        doc_path = asset.get_document_from_asset()
+        vector_store = VectorStore(str(asset.id))
+        vector_store.index_document(doc_path=doc_path)
+        data = vector_store.invoke(f"{field_name} {description}")
+        frames = data['images']       # Assume this method retrieves frame data
+        print("len ********", len(frames))
+        print("data text ", data['texts'] )
+        
+        if not field_name or not description:
+            raise ValueError("Field name, description, frames are empty.")
         try:
-            prompt = self.chat_prompt.format_prompt(
+            px = self.chat_prompt.format_prompt(
                 field_name=field_name,
                 description=description,
-                document=document
             )
-            return prompt.to_string()
+            
+            
+            human_messages = [
+                HumanMessage(
+                    content=[
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{img}"
+                            },
+                        } 
+                    for img in frames]
+                )
+            ]
+
+            text_content = []
+            if data['texts']:
+                text_content.append(
+                        HumanMessage(
+                            content= "\n".join(data['texts'])
+                        ) )
+        
+            
+            return px.messages + text_content + human_messages
         except Exception as e:
-            logger.error(f"Error constructing extraction prompt: {e}")
+            logger.error(f"Error constructing extraction prompt for videos: {e}")
             raise
+
 
 class ImageExtractionHandler(ExtractionHandler):
     def __init__(self, chat_prompt: ChatPromptTemplate):
@@ -248,7 +278,7 @@ class OpenAIAgentService(BaseAgentService):
 
         # Initialize handlers
         self.handlers = {
-            ASSET_FILE_TYPE.PDF: DocumentExtractionHandler(self.document_chat_prompt),
+            ASSET_FILE_TYPE.PDF: DocumentExtractionHandler(self.video_chat_prompt),
             ASSET_FILE_TYPE.JPEG: ImageExtractionHandler(self.image_chat_prompt),
             ASSET_FILE_TYPE.JPG: ImageExtractionHandler(self.image_chat_prompt),
             ASSET_FILE_TYPE.PNG: ImageExtractionHandler(self.image_chat_prompt),
