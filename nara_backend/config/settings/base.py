@@ -195,6 +195,8 @@ REST_AUTH = {
     "JWT_AUTH_REFRESH_COOKIE": "my-refresh-token",
 }
 
+# Google Drive Settings
+GOOGLE_DRIVE_SERVICE_ACCOUNT = None  # This will be overridden by environment-specific settings
 
 # Logging configuration
 

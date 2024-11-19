@@ -6,7 +6,8 @@ import os
 import concurrent.futures
 from typing import List, Generator
 
-from apps.common.utils.s3_utils import download_from_s3
+from apps.common.utils.s3_utils import download_from_s3, S3Service
+from apps.common.utils.gdrive_utils import GoogleDriveService
 
 from apps.common.models import NBaseWithOwnerModel
 
@@ -48,52 +49,104 @@ class Asset(NBaseWithOwnerModel):
     description = models.TextField()
     project = models.ForeignKey(
         Project,
-        blank=False,
         on_delete=models.CASCADE,
+        related_name="assets",
     )
-    url = models.URLField()
+    url = models.URLField(max_length=500)
     upload_source = models.CharField(
-        max_length=200,
-        choices=ASSET_UPLOAD_SOURCE,
+        max_length=20,
+        choices=ASSET_UPLOAD_SOURCE.choices,
+        default=ASSET_UPLOAD_SOURCE.UPLOAD,
     )
-    file_type = models.CharField(max_length=200, choices=ASSET_FILE_TYPE, default=ASSET_FILE_TYPE.OTHER)
+    file_type = models.CharField(
+        max_length=20,
+        choices=ASSET_FILE_TYPE.choices,
+        default=ASSET_FILE_TYPE.OTHER,
+    )
+    gdrive_file_id = models.CharField(max_length=100, null=True, blank=True)
+    gdrive_credentials = models.JSONField(null=True, blank=True)
+    s3_bucket = models.CharField(max_length=100, null=True, blank=True)
+    s3_key = models.CharField(max_length=500, null=True, blank=True)
+    s3_credentials = models.JSONField(null=True, blank=True)
 
     def __str__(self) -> str:
         return str(self.name)
     
+    def get_file_path(self):
+        """Get the local path or download the file if it's from an external source"""
+        local_path = f"/tmp/{self.name}"
+        
+        if self.upload_source == ASSET_UPLOAD_SOURCE.GDRIVE:
+            return self._download_from_gdrive()
+        elif self.upload_source == ASSET_UPLOAD_SOURCE.AWS_S3:
+            return self._download_from_s3()
+        else:
+            if not os.path.exists(local_path):
+                download_from_s3(self.url, local_path)
+            return local_path
+
+    def _download_from_gdrive(self):
+        """Download file from Google Drive using stored credentials"""
+        if not self.gdrive_file_id or not self.gdrive_credentials:
+            raise ValueError("Google Drive file ID and credentials are required")
+
+        try:
+            gdrive_service = GoogleDriveService(self.gdrive_credentials)
+            gdrive_service.authenticate()
+            
+            # Create a temporary directory for downloads
+            download_dir = f"/tmp/nara/gdrive/{self.id}"
+            os.makedirs(download_dir, exist_ok=True)
+            
+            file_info = gdrive_service.get_file_by_id(
+                self.gdrive_file_id, 
+                os.path.join(download_dir, self.name)
+            )
+            return file_info['local_path']
+        except Exception as e:
+            raise Exception(f"Error downloading from Google Drive: {str(e)}")
+
+    def _download_from_s3(self):
+        """Download file from S3 using stored credentials"""
+        if not self.s3_bucket or not self.s3_key:
+            raise ValueError("S3 bucket and key are required")
+
+        try:
+            s3_service = S3Service(self.s3_credentials)  # Credentials are optional
+            s3_service.authenticate()
+            
+            # Create a temporary directory for downloads
+            download_dir = f"/tmp/nara/s3/{self.id}"
+            os.makedirs(download_dir, exist_ok=True)
+            
+            file_info = s3_service.get_file_by_key(
+                self.s3_bucket,
+                self.s3_key,
+                os.path.join(download_dir, self.name)
+            )
+            return file_info['local_path']
+        except Exception as e:
+            raise Exception(f"Error downloading from S3: {str(e)}")
 
     def get_images_from_asset(self):
-        local_path = f"/tmp/{self.name}"
-        download_from_s3(self.url, local_path) 
+        local_path = self.get_file_path()
         return [get_base64_image(local_path)]
     
-
     def get_frames_from_video(self):
-        local_path = f"/tmp/{self.name}"
-        download_from_s3(self.url, local_path) 
+        local_path = self.get_file_path()
         try:
             return get_frames(local_path)
         except Exception as e:
             print(e)
 
     def get_video(self):
-        local_path = f"/tmp/{self.name}"
-        if not os.path.exists(local_path):
-            download_from_s3(self.url, local_path) 
-        return local_path
+        return self.get_file_path()
     
     def get_audio(self):
-        local_path = f"/tmp/{self.name}"
-        if not os.path.exists(local_path):
-            download_from_s3(self.url, local_path) 
-        return local_path
-
+        return self.get_file_path()
 
     def get_document_from_asset(self):
-        local_path = f"/tmp/{self.name}"
-        if not os.path.exists(local_path):
-            download_from_s3(self.url, local_path) 
-        return local_path
+        return self.get_file_path()
     
     def concatenate_documents_fast(self, documents: List) -> str:
         # Use list comprehension and join for faster concatenation
