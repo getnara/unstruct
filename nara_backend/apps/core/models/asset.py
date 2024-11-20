@@ -8,6 +8,7 @@ from typing import List, Generator
 
 from apps.common.utils.s3_utils import download_from_s3, S3Service
 from apps.common.utils.gdrive_utils import GoogleDriveService
+from apps.common.utils.dropbox_utils import DropboxService  # Import DropboxService
 
 from apps.common.models import NBaseWithOwnerModel
 
@@ -68,6 +69,8 @@ class Asset(NBaseWithOwnerModel):
     s3_bucket = models.CharField(max_length=100, null=True, blank=True)
     s3_key = models.CharField(max_length=500, null=True, blank=True)
     s3_credentials = models.JSONField(null=True, blank=True)
+    dropbox_path = models.CharField(max_length=1024, null=True, blank=True)
+    dropbox_access_token = models.JSONField(null=True, blank=True)
 
     def __str__(self) -> str:
         return str(self.name)
@@ -80,6 +83,8 @@ class Asset(NBaseWithOwnerModel):
             return self._download_from_gdrive()
         elif self.upload_source == ASSET_UPLOAD_SOURCE.AWS_S3:
             return self._download_from_s3()
+        elif self.upload_source == ASSET_UPLOAD_SOURCE.DROPBOX:
+            return self._download_from_dropbox()
         else:
             if not os.path.exists(local_path):
                 download_from_s3(self.url, local_path)
@@ -127,6 +132,27 @@ class Asset(NBaseWithOwnerModel):
             return file_info['local_path']
         except Exception as e:
             raise Exception(f"Error downloading from S3: {str(e)}")
+
+    def _download_from_dropbox(self):
+        """Download file from Dropbox using stored access token"""
+        if not self.dropbox_path or not self.dropbox_access_token:
+            raise ValueError("Dropbox path and access token are required")
+
+        try:
+            dropbox_service = DropboxService(self.dropbox_access_token)
+            dropbox_service.authenticate()
+            
+            # Create a temporary directory for downloads
+            download_dir = f"/tmp/nara/dropbox/{self.id}"
+            os.makedirs(download_dir, exist_ok=True)
+            
+            file_info = dropbox_service.get_file_by_id(
+                self.dropbox_path,
+                os.path.join(download_dir, self.name)
+            )
+            return file_info['local_path']
+        except Exception as e:
+            raise Exception(f"Error downloading from Dropbox: {str(e)}")
 
     def get_images_from_asset(self):
         local_path = self.get_file_path()

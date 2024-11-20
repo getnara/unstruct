@@ -12,6 +12,7 @@ from apps.core.models.asset import ASSET_FILE_TYPE
 from apps.agent_management.services.ai_service.vector_store import VectorStore
 from  apps.common.utils.gdrive_utils import GoogleDriveService
 from apps.common.utils.s3_utils import S3Service
+from apps.common.utils.dropbox_utils import DropboxService
 
 class AssetViewSet(NBaselViewSet):
     name = "asset"
@@ -76,6 +77,10 @@ class AssetViewSet(NBaselViewSet):
         # Handle S3 uploads
         if upload_source == ASSET_UPLOAD_SOURCE.AWS_S3:
             return self.create_assets_from_s3(request)
+            
+        # Handle Dropbox uploads
+        if upload_source == ASSET_UPLOAD_SOURCE.DROPBOX:
+            return self.create_assets_from_dropbox(request)
             
         return Response(
             {"error": f"Unsupported upload source: {upload_source}"}, 
@@ -235,6 +240,85 @@ class AssetViewSet(NBaselViewSet):
             s3_bucket=bucket,
             s3_key=key,
             s3_credentials=aws_credentials
+        )
+        asset.save()
+        return asset
+
+    def create_assets_from_dropbox(self, request):
+        """Create assets from Dropbox files or folders"""
+        project_id = request.data.get("project_id")
+        paths = request.data.get("paths", [])  # List of file paths
+        folder_path = request.data.get("folder_path")  # Optional folder path
+        recursive = request.data.get("recursive", True)
+        access_token = request.data.get("access_token")
+
+        if not project_id:
+            return Response({"error": "Project ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not paths and not folder_path:
+            return Response(
+                {"error": "Either paths or folder_path is required"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not access_token:
+            return Response(
+                {"error": "Dropbox access token is required"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            project = Project.objects.get(id=project_id)
+        except Project.DoesNotExist:
+            return Response({"error": "Project not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            # Initialize Dropbox service
+            dropbox_service = DropboxService(access_token)
+            print(access_token)
+            dropbox_service.authenticate()
+
+            assets = []
+
+            # Process individual files if provided
+            if paths:
+                for path in paths:
+                    file_info = dropbox_service.get_file_by_id(path)
+                    asset = self._create_asset_from_dropbox_file(
+                        project=project,
+                        file_path=path,
+                        file_info=file_info,
+                        access_token=access_token
+                    )
+                    assets.append(asset)
+
+            # Process folder if provided
+            if folder_path:
+                for file_info in dropbox_service.list_folder_contents(folder_path, recursive):
+                    asset = self._create_asset_from_dropbox_file(
+                        project=project,
+                        file_path=file_info['id'],
+                        file_info=file_info,
+                        access_token=access_token
+                    )
+                    assets.append(asset)
+
+            serializer = self.get_serializer(assets, many=True)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def _create_asset_from_dropbox_file(self, project, file_path, file_info, access_token):
+        """Helper method to create an asset from a Dropbox file"""
+        asset = Asset(
+            name=file_info['name'],
+            description=f"Dropbox file: {file_info['name']}",
+            project=project,
+            upload_source=ASSET_UPLOAD_SOURCE.DROPBOX,
+            file_type=self.get_file_type(file_info['name']),
+            dropbox_path=file_path,
+            dropbox_access_token=access_token
         )
         asset.save()
         return asset
