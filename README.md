@@ -195,3 +195,76 @@ A: Use the command `python manage.py test` to run all tests. You can specify an 
 
 Q: How do I deploy the project?
 A: The project includes a Dockerfile and docker-compose.yml for containerization. For production, consider using a platform like AWS Elastic Beanstalk or Heroku.
+
+## Commit Message Guidelines
+
+We follow the Conventional Commits specification for commit messages. This leads to more readable messages that are easy to follow when looking through the project history.
+
+### Commit Message Format
+Each commit message consists of a **header**, a **body** and a **footer**. The header has a special format that includes a **type**, a **scope** and a **subject**:
+
+```
+<type>(<scope>): <subject>
+<BLANK LINE>
+<body>
+<BLANK LINE>
+<footer>
+```
+
+### Examples:
+
+1. Feature commit:
+```
+feat(projects): add file upload capability to project creation
+
+Implemented S3 file upload integration in project creation flow.
+Added progress tracking and error handling.
+
+Closes #123
+```
+
+2. Bug fix:
+```
+fix(auth): resolve token refresh issue in API calls
+
+Updated authentication flow to properly handle token refresh.
+Added error handling for expired tokens.
+
+Fixes #456
+```
+
+3. Documentation:
+```
+docs(readme): update deployment instructions
+
+Added detailed AWS configuration steps
+Updated environment variables section
+```
+
+### Types
+- `feat`: New feature (referenced in ```typescript:app/components/home/HowItWorks.tsx
+startLine: 1
+endLine: 18```)
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Changes that don't affect code meaning
+- `refactor`: Code changes that neither fix a bug nor add a feature
+- `perf`: Performance improvements
+- `test`: Adding or modifying tests
+- `chore`: Changes to build process or auxiliary tools
+- `revert`: Reverts a previous commit
+
+### Scope
+The scope should be the name of the module affected (projects, auth, tasks, etc.)
+
+### Subject
+The subject contains a succinct description of the change:
+- use the imperative, present tense: "change" not "changed" nor "changes"
+- don't capitalize the first letter
+- no dot (.) at the end
+
+### Body
+The body should include the motivation for the change and contrast this with previous behavior.
+
+### Footer
+The footer should contain any information about Breaking Changes and is also the place to reference GitHub issues that this commit closes.
