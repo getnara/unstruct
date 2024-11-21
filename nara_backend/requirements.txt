@@ -123,10 +123,10 @@ protobuf==3.19.5
 pyparsing>=2.3.1
 colorama~=0.4
 tensorboard>=2.4.1
+gunicorn==21.2.0
 pdf2image==1.17.0
 pypdf==5.1.0
 py-zerox==0.0.7
-
 # Google Drive Dependencies
 google-auth==2.27.0
 google-auth-oauthlib==1.2.0

@@ -1,0 +1,52 @@
+{
+    "family": "nara-backend",
+    "networkMode": "bridge", 
+    "cpu": "1024",
+    "memory": "2048",
+    "executionRoleArn": "arn:aws:iam::897722672231:role/ecsTaskExecutionRole",
+    "taskRoleArn": "arn:aws:iam::897722672231:role/ecsTaskRole",
+    "containerDefinitions": [
+        {
+            "name": "nara-backend",
+            "image": "897722672231.dkr.ecr.us-east-2.amazonaws.com/nara-backend:latest",
+            "essential": true,
+            "environment": [
+                {
+                    "name": "DJANGO_SETTINGS_MODULE",
+                    "value": "config.settings.production"
+                },
+                {
+                    "name": "SECRET_KEY",
+                    "value": "django-insecure-jkz%ahq_oqyhm-t@)t)lkov8&u+glu+h1(rhmc(6p%3^ieu@34"
+                },
+                {
+                    "name": "OPENAI_API_KEY",
+                    "value": "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"
+                },
+                {
+                    "name": "LLAMA_CLOUD_API_KEY",
+                    "value": "llx-5gCTMlOizD8osRGLIjPWt6ZnsMp937uStucgP1U7QAM3WP1d"
+                },
+                {
+                    "name": "DEEPGRAM_API_KEY",
+                    "value": "f76b899174dbf74b96f0553169feb47d58b601ac"
+                }
+            ],
+            "portMappings": [
+                {
+                    "containerPort": 8000,
+                    "hostPort": 0, 
+                    "protocol": "tcp"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/nara-backend",
+                    "awslogs-region": "us-east-2",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            }
+        }
+    ]
+}
