@@ -19,11 +19,10 @@ class TaskViewSet(NBaselViewSet):
     def get_queryset(self):
         return Task.objects.all()
     
-    @action(detail=False, methods=["post"], url_path="process")
-    def process_task(self, request):
+    @action(detail=True, methods=["post"], url_path="process")
+    def process_task(self, request, pk=None):
         try:
-            task_id = request.data.get("task_id")
-            task = Task.objects.get(pk=task_id)
+            task = self.get_object()
         except Task.DoesNotExist:
             return Response({"error": "Task not found."}, status=status.HTTP_404_NOT_FOUND)
 
