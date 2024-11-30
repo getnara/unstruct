@@ -1,0 +1,56 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches: [cd-pipeline]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::897722672231:role/github-actions-role
+          aws-region: us-east-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      
+      - name: Build and push Docker image
+        env:
+          ECR_REGISTRY: 897722672231.dkr.ecr.us-east-2.amazonaws.com
+          ECR_REPOSITORY: nara-backend
+          IMAGE_TAG: latest
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      
+      - name: Deploy to EC2
+        id: ec2-deploy
+        run: |
+          INSTANCE_ID=$(aws ec2 run-instances \
+            --image-id ami-0607c90293527de0e \
+            --instance-type t2.xlarge \
+            --key-name nara-ec2-key-pair \
+            --security-group-ids ${{ secrets.AWS_SECURITY_GROUP_ID }} \
+            --subnet-id ${{ secrets.AWS_SUBNET_ID }} \
+            --user-data "#!/bin/bash
+              amazon-linux-extras install docker
+              systemctl start docker
+              systemctl enable docker
+              aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin $ECR_REGISTRY
+              docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+              docker run -d -p 80:80 $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" \
+            --query 'Instances[0].InstanceId' \
+            --output text)
+          echo "instance_id=$INSTANCE_ID" >> $GITHUB_OUTPUT
+      
+      - name: Wait for instance to be running
+        run: aws ec2 wait instance-running --instance-ids ${{ steps.ec2-deploy.outputs.instance_id }}
