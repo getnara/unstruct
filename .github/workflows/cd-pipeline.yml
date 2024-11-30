@@ -2,7 +2,7 @@ name: CD Pipeline
 
 on:
   push:
-    branches: [cd-pipeline]
+    branches: [main]
 
 jobs:
   deploy:
