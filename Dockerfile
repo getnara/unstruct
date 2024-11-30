@@ -7,7 +7,7 @@ RUN apt-get update -qq && apt-get install -y -qq \
 ENV PYTHONUNBUFFERED 1
 WORKDIR /nara-backend
 RUN pip install gunicorn
-RUN pip install -r /app/nara_backend/requirements.txt
+RUN pip install -r requirements.txt
 RUN chmod +x /app/nara_backend/scripts/*.sh
 EXPOSE 8000
 ENTRYPOINT ["/app/nara_backend/scripts/run_server.sh"]
