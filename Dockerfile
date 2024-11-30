@@ -1,12 +1,17 @@
-FROM python:3.10
+FROM python:3.12.6
+RUN apt-get update -qq && apt-get install -y -qq \
+    gdal-bin binutils libproj-dev libgdal-dev cmake ffmpeg &&\
+    apt-get clean all &&\
+    rm -rf /var/apt/lists/* &&\
+    rm -rf /var/cache/apt/*
+ENV PYTHONUNBUFFERED 1
+WORKDIR /nara-backend
+COPY .env .env 
+COPY . /nara-backend
+RUN pip install gunicorn
+RUN pip install -r requirements.txt
+COPY ./scripts /app/nara_backend/scripts/
+RUN chmod +x /app/nara_backend/scripts/*.sh
+EXPOSE 8000
+ENTRYPOINT ["/app/nara_backend/scripts/run_server.sh"]
 
-WORKDIR /app
-
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . .
-
-EXPOSE 80
-
-CMD ["uvicorn", "nara_backend.main:app", "--host", "0.0.0.0", "--port", "80"]
