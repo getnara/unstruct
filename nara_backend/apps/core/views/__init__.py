@@ -7,6 +7,7 @@ from .project_view import ProjectViewSet
 from .task_view import TaskViewSet
 from .user_view import UserViewSet
 from .views import ApiRoot
+from .organization_view import OrganizationViewSet
 
 __all__ = [
     "CognitoLoginView",
@@ -16,4 +17,5 @@ __all__ = [
     "TaskViewSet",
     "AssetViewSet",
     "UserViewSet",
+    "OrganizationViewSet",
 ]

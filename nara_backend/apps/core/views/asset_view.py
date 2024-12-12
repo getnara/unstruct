@@ -10,16 +10,19 @@ from apps.core.models.asset import ASSET_UPLOAD_SOURCE
 from apps.core.serializers import AssetSerializer
 from apps.core.models.asset import ASSET_FILE_TYPE
 from apps.agent_management.services.ai_service.vector_store import VectorStore
-from  apps.common.utils.gdrive_utils import GoogleDriveService
+from apps.common.utils.gdrive_utils import GoogleDriveService
 from apps.common.utils.s3_utils import S3Service
 from apps.common.utils.dropbox_utils import DropboxService
+from apps.common.mixins.organization_mixin import OrganizationMixin
 
-class AssetViewSet(NBaselViewSet):
+
+class AssetViewSet(OrganizationMixin, NBaselViewSet):
     name = "asset"
     serializer_class = AssetSerializer
+    queryset = Asset.objects.all()
 
     def get_queryset(self):
-        return Asset.objects.all()
+        return super().get_queryset().filter(organization=self.get_organization())
 
     @action(detail=False, methods=["post"])
     def create_assets_for_project(self, request):

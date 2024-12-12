@@ -1,3 +1,10 @@
+from django.db import models
+from rest_framework import status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+import logging
+import os
+
 from apps.common.views import NBaselViewSet
 from apps.core.models import Task
 from apps.core.serializers import TaskSerializer
@@ -10,27 +17,76 @@ from django.http import HttpResponse
 from datetime import datetime
 import json
 from apps.common.utils.snowflake_utils import SnowflakeManager
+from apps.common.mixins.organization_mixin import OrganizationMixin
+from django.core.exceptions import ValidationError
+from apps.core.models.asset import ASSET_FILE_TYPE
 
+logger = logging.getLogger(__name__)
 
-class TaskViewSet(NBaselViewSet):
+class TaskViewSet(OrganizationMixin, NBaselViewSet):
     name = "task"
     serializer_class = TaskSerializer
+    queryset = Task.objects.all()
 
     def get_queryset(self):
-        return Task.objects.all()
-    
+        return super().get_queryset().filter(organization=self.get_organization())
+
     @action(detail=True, methods=["post"], url_path="process")
     def process_task(self, request, pk=None):
         try:
             task = self.get_object()
-        except Task.DoesNotExist:
-            return Response({"error": "Task not found."}, status=status.HTTP_404_NOT_FOUND)
-
-        processor = TaskProcessor()
-        try:
+            organization = task.organization
+            
+            # Log organization and subscription details
+            logger.info(f"Processing task for organization: {organization.id}")
+            logger.info(f"Organization subscription plan: {organization.current_subscription_plan}")
+            logger.info(f"Organization owner email: {organization.owner.email}")
+            
+            # Get all assets for this task
+            assets = task.assets.all()
+            if not assets:
+                return Response(
+                    {"error": "No assets found for this task"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Log asset details
+            for asset in assets:
+                logger.info(f"Processing asset: {asset.id}, type: {asset.file_type}")
+            
+            # Process each asset with appropriate limits
+            for asset in assets:
+                # Get file size in GB for media files
+                file_path = asset.get_file_path()
+                size_in_gb = os.path.getsize(file_path) / (1024 * 1024 * 1024)
+                
+                # Check file type and apply appropriate limits
+                if asset.file_type == ASSET_FILE_TYPE.PDF:
+                    # Check PDF processing limit
+                    logger.info(f"Checking PDF processing limit for org {organization.id}")
+                    organization.can_process_pdf()
+                    organization.increment_pdf_count()
+                    logger.info("PDF processing limit check passed")
+                    
+                elif asset.file_type == ASSET_FILE_TYPE.MP4:
+                    # Check video processing limit
+                    logger.info(f"Checking video processing limit for org {organization.id}, size: {size_in_gb}GB")
+                    organization.can_process_video(size_in_gb)
+                    organization.add_video_usage(size_in_gb)
+                    logger.info("Video processing limit check passed")
+                    
+                elif asset.file_type == ASSET_FILE_TYPE.MP3:
+                    # Check audio processing limit
+                    logger.info(f"Checking audio processing limit for org {organization.id}, size: {size_in_gb}GB")
+                    organization.can_process_audio(size_in_gb)
+                    organization.add_audio_usage(size_in_gb)
+                    logger.info("Audio processing limit check passed")
+            
+            # Process the task
             task.status = "RUNNING"
             task.save()
             
+            processor = TaskProcessor()
             structured_output = processor.process(task)
             
             # Store the process results
@@ -39,9 +95,18 @@ class TaskViewSet(NBaselViewSet):
             task.save()
             
             return Response(structured_output, status=status.HTTP_200_OK)
+            
+        except ValidationError as e:
+            logger.error(f"Validation error: {str(e)}")
+            if task:
+                task.status = "FAILED"
+                task.save()
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            task.status = "FAILED"
-            task.save()
+            logger.error(f"Unexpected error: {str(e)}")
+            if task:
+                task.status = "FAILED"
+                task.save()
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=True, methods=["get"], url_path="exporttoexcel")

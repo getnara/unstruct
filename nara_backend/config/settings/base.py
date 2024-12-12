@@ -33,6 +33,57 @@ environ.Env.read_env(BASE_DIR.__str__() + "/../.env")
 # Raises django's ImproperlyConfigured exception if SECRET_KEY not in os.environ
 SECRET_KEY = env("SECRET_KEY")
 
+# Stripe Settings
+STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
+
+# Subscription Plan Names - Configurable through env
+SUBSCRIPTION_PLAN_NAMES = {
+    'free': env('FREE_PLAN_NAME', default='Free'),
+    'pro': env('PRO_PLAN_NAME', default='Pro'),
+    'enterprise': env('ENTERPRISE_PLAN_NAME', default='Enterprise')
+}
+
+# Subscription Plan Limits
+SUBSCRIPTION_PLANS = {
+    'free': {
+        'max_orgs': env.int('FREE_PLAN_MAX_ORGS', default=1),
+        'max_members': env.int('FREE_PLAN_MAX_MEMBERS', default=5),
+        'max_pdfs_per_month': env.int('FREE_PLAN_MAX_PDFS', default=10),
+        'max_video_gb_per_month': env.float('FREE_PLAN_MAX_VIDEO_GB', default=0.5),  # 500MB
+        'max_audio_gb_per_month': env.float('FREE_PLAN_MAX_AUDIO_GB', default=0.5)   # 500MB
+    },
+    'pro': {
+        'max_orgs': env.int('PRO_PLAN_MAX_ORGS', default=5),
+        'max_members': env.int('PRO_PLAN_MAX_MEMBERS', default=10),
+        'max_pdfs_per_month': env.int('PRO_PLAN_MAX_PDFS', default=100),
+        'max_video_gb_per_month': env.float('PRO_PLAN_MAX_VIDEO_GB', default=5.0),   # 5GB
+        'max_audio_gb_per_month': env.float('PRO_PLAN_MAX_AUDIO_GB', default=5.0)    # 5GB
+    },
+    'enterprise': {
+        'max_orgs': env.int('ENTERPRISE_PLAN_MAX_ORGS', default=999999),
+        'max_members': env.int('ENTERPRISE_PLAN_MAX_MEMBERS', default=999999),
+        'max_pdfs_per_month': env.int('ENTERPRISE_PLAN_MAX_PDFS', default=999999),
+        'max_video_gb_per_month': env.float('ENTERPRISE_PLAN_MAX_VIDEO_GB', default=999999.0),
+        'max_audio_gb_per_month': env.float('ENTERPRISE_PLAN_MAX_AUDIO_GB', default=999999.0)
+    }
+}
+
+# Additional plans can be added through env vars
+ADDITIONAL_PLANS = env.dict('ADDITIONAL_PLANS', default={})
+if ADDITIONAL_PLANS:
+    for plan_name, plan_config in ADDITIONAL_PLANS.items():
+        SUBSCRIPTION_PLANS[plan_name] = {
+            'max_orgs': env.int(f'{plan_name.upper()}_MAX_ORGS', default=1),
+            'max_members': env.int(f'{plan_name.upper()}_MAX_MEMBERS', default=5),
+            'max_pdfs_per_month': env.int(f'{plan_name.upper()}_MAX_PDFS', default=10),
+            'max_video_gb_per_month': env.float(f'{plan_name.upper()}_MAX_VIDEO_GB', default=0.5),
+            'max_audio_gb_per_month': env.float(f'{plan_name.upper()}_MAX_AUDIO_GB', default=0.5)
+        }
+        SUBSCRIPTION_PLAN_NAMES[plan_name] = env(f'{plan_name.upper()}_PLAN_NAME', default=plan_name.title())
+
+# All available plan choices for the Organization model
+SUBSCRIPTION_PLAN_CHOICES = [(k, v) for k, v in SUBSCRIPTION_PLAN_NAMES.items()]
+
 # Application definition
 
 NARA_APPS = [
@@ -177,7 +228,7 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"],
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        # "rest_framework.authentication.SessionAuthentication",
+        "apps.common.auth.simple_auth.SimpleAuthentication",
         "rest_framework.authentication.TokenAuthentication",
         "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
     ),
@@ -197,6 +248,11 @@ REST_AUTH = {
 
 # Google Drive Settings
 GOOGLE_DRIVE_SERVICE_ACCOUNT = None  # This will be overridden by environment-specific settings
+
+# AWS Cognito Settings
+USER_POOL_ID = env('USER_POOL_ID')
+AWS_REGION = env('AWS_REGION')
+USER_POOL_CLIENT_ID = env('USER_POOL_CLIENT_ID')
 
 # Logging configuration
 
@@ -272,3 +328,4 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = ['*']
 CORS_ALLOW_HEADERS = ['*']
+

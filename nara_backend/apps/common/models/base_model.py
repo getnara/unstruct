@@ -20,15 +20,19 @@ class NBaseModel(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
-        blank=True,
-        related_name="%(class)s_created_by",
+        related_name="%(class)s_created"
     )
     updated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
-        blank=True,
-        related_name="%(class)s_updated_by",
+        related_name="%(class)s_updated"
+    )
+    organization = models.ForeignKey(
+        'core.Organization',
+        on_delete=models.CASCADE,
+        null=True,
+        related_name="%(class)s_items"
     )
 
     class Meta:

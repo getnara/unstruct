@@ -137,3 +137,5 @@ google-auth-oauthlib==1.2.0
 google-auth-httplib2==0.2.0
 google-api-python-client==2.120.0
 dropbox==11.36.2
+pycognito==2024.5.1
+stripe==11.3.0
