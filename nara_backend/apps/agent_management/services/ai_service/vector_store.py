@@ -1,6 +1,11 @@
 import os
 import uuid
+import ssl
+import certifi
 
+# Configure SSL context to use certifi's certificates
+ssl_context = ssl.create_default_context(cafile=certifi.where())
+ssl._create_default_https_context = lambda: ssl_context
 
 import numpy as np
 from langchain_community.vectorstores import LanceDB
