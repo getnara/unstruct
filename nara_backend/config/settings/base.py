@@ -108,6 +108,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.amazon_cognito",
     "dj_rest_auth.registration",
     "corsheaders",
+    'drf_spectacular',
 ] + NARA_APPS
 
 MIDDLEWARE = [
@@ -232,7 +233,9 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.TokenAuthentication",
         "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
     ),
-    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
+    #"DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+
 }
 
 SIMPLE_JWT = {

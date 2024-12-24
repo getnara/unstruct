@@ -1,0 +1,3296 @@
+openapi: 3.0.3
+info:
+  title: ''
+  version: 0.0.0
+paths:
+  /:
+    get:
+      operationId: root_retrieve
+      security:
+      - tokenAuth: []
+      - jwtHeaderAuth: []
+      - jwtCookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /agent_management/model_configuration/:
+    get:
+      operationId: agent_management_model_configuration_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - agent_management
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedModelConfigurationList'
+          description: ''
+    post:
+      operationId: agent_management_model_configuration_create
+      tags:
+      - agent_management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelConfiguration'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ModelConfiguration'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ModelConfiguration'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelConfiguration'
+          description: ''
+  /agent_management/model_configuration/{id}/:
+    get:
+      operationId: agent_management_model_configuration_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this model configuration.
+        required: true
+      tags:
+      - agent_management
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelConfiguration'
+          description: ''
+    put:
+      operationId: agent_management_model_configuration_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this model configuration.
+        required: true
+      tags:
+      - agent_management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelConfiguration'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ModelConfiguration'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ModelConfiguration'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelConfiguration'
+          description: ''
+    patch:
+      operationId: agent_management_model_configuration_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this model configuration.
+        required: true
+      tags:
+      - agent_management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedModelConfiguration'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedModelConfiguration'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedModelConfiguration'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelConfiguration'
+          description: ''
+    delete:
+      operationId: agent_management_model_configuration_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this model configuration.
+        required: true
+      tags:
+      - agent_management
+      responses:
+        '204':
+          description: No response body
+  /agent_management/tasks/{id}/process/:
+    post:
+      operationId: agent_management_tasks_process_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - agent_management
+      security:
+      - tokenAuth: []
+      - jwtHeaderAuth: []
+      - jwtCookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/schema/:
+    get:
+      operationId: api_schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - ug
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - api
+      security:
+      - tokenAuth: []
+      - jwtHeaderAuth: []
+      - jwtCookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /core/action/:
+    get:
+      operationId: core_action_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - core
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedActionList'
+          description: ''
+    post:
+      operationId: core_action_create
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Action'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Action'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Action'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Action'
+          description: ''
+  /core/action/{id}/:
+    get:
+      operationId: core_action_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this action.
+        required: true
+      tags:
+      - core
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Action'
+          description: ''
+    put:
+      operationId: core_action_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this action.
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Action'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Action'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Action'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Action'
+          description: ''
+    patch:
+      operationId: core_action_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this action.
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAction'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAction'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAction'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Action'
+          description: ''
+    delete:
+      operationId: core_action_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this action.
+        required: true
+      tags:
+      - core
+      responses:
+        '204':
+          description: No response body
+  /core/asset/:
+    get:
+      operationId: core_asset_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - core
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAssetList'
+          description: ''
+    post:
+      operationId: core_asset_create
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Asset'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Asset'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Asset'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+          description: ''
+  /core/asset/{id}/:
+    get:
+      operationId: core_asset_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this asset.
+        required: true
+      tags:
+      - core
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+          description: ''
+    put:
+      operationId: core_asset_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this asset.
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Asset'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Asset'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Asset'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+          description: ''
+    patch:
+      operationId: core_asset_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this asset.
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAsset'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAsset'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAsset'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+          description: ''
+    delete:
+      operationId: core_asset_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this asset.
+        required: true
+      tags:
+      - core
+      responses:
+        '204':
+          description: No response body
+  /core/asset/assets/:
+    post:
+      operationId: core_asset_assets_create
+      description: Create assets from various sources
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Asset'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Asset'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Asset'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+          description: ''
+  /core/asset/create_assets_for_project/:
+    post:
+      operationId: core_asset_create_assets_for_project_create
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Asset'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Asset'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Asset'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+          description: ''
+  /core/organizations/:
+    get:
+      operationId: core_organizations_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - core
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOrganizationList'
+          description: ''
+    post:
+      operationId: core_organizations_create
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Organization'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Organization'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Organization'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+          description: ''
+  /core/organizations/{invitation_id}/accept-invite/:
+    post:
+      operationId: core_organizations_accept_invite_create
+      description: Accept an organization invitation using the invitation ID.
+      parameters:
+      - in: path
+        name: invitation_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Organization'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Organization'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Organization'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+          description: ''
+  /core/organizations/{invitation_id}/decline-invite/:
+    post:
+      operationId: core_organizations_decline_invite_create
+      description: Decline an organization invitation using the invitation ID.
+      parameters:
+      - in: path
+        name: invitation_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Organization'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Organization'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Organization'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+          description: ''
+  /core/organizations/{id}/:
+    get:
+      operationId: core_organizations_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+          description: ''
+    put:
+      operationId: core_organizations_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Organization'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Organization'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Organization'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+          description: ''
+    patch:
+      operationId: core_organizations_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganization'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganization'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganization'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+          description: ''
+    delete:
+      operationId: core_organizations_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      responses:
+        '204':
+          description: No response body
+  /core/organizations/{id}/invite-member/:
+    post:
+      operationId: core_organizations_invite_member_create
+      description: Invite a member to the organization.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Organization'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Organization'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Organization'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+          description: ''
+  /core/organizations/{id}/members/:
+    get:
+      operationId: core_organizations_members_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+          description: ''
+  /core/organizations/{id}/members/{member_id}/:
+    delete:
+      operationId: core_organizations_members_destroy
+      description: Remove a member from the organization. Only admins can perform
+        this action.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: member_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      responses:
+        '204':
+          description: No response body
+  /core/organizations/invitations/:
+    get:
+      operationId: core_organizations_invitations_retrieve
+      description: List all invitations for the current user.
+      tags:
+      - core
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+          description: ''
+  /core/project/:
+    get:
+      operationId: core_project_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - core
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProjectList'
+          description: ''
+    post:
+      operationId: core_project_create
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Project'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Project'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+  /core/project/{id}/:
+    get:
+      operationId: core_project_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this project.
+        required: true
+      tags:
+      - core
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+    put:
+      operationId: core_project_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this project.
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Project'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Project'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+    patch:
+      operationId: core_project_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this project.
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProject'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProject'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProject'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+    delete:
+      operationId: core_project_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this project.
+        required: true
+      tags:
+      - core
+      responses:
+        '204':
+          description: No response body
+  /core/task/:
+    get:
+      operationId: core_task_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - core
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTaskList'
+          description: ''
+    post:
+      operationId: core_task_create
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Task'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Task'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+          description: ''
+  /core/task/{id}/:
+    get:
+      operationId: core_task_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this task.
+        required: true
+      tags:
+      - core
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+          description: ''
+    put:
+      operationId: core_task_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this task.
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Task'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Task'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+          description: ''
+    patch:
+      operationId: core_task_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this task.
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTask'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTask'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTask'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+          description: ''
+    delete:
+      operationId: core_task_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this task.
+        required: true
+      tags:
+      - core
+      responses:
+        '204':
+          description: No response body
+  /core/task/{id}/exporttoexcel/:
+    get:
+      operationId: core_task_exporttoexcel_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this task.
+        required: true
+      tags:
+      - core
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+          description: ''
+  /core/task/{id}/exporttosnowflake/:
+    post:
+      operationId: core_task_exporttosnowflake_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this task.
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Task'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Task'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+          description: ''
+  /core/task/{id}/process/:
+    post:
+      operationId: core_task_process_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this task.
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Task'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Task'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+          description: ''
+  /core/user/:
+    get:
+      operationId: core_user_list
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - core
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserList'
+          description: ''
+    post:
+      operationId: core_user_create
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /core/user/{id}/:
+    get:
+      operationId: core_user_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this user.
+        required: true
+      tags:
+      - core
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: core_user_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this user.
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: core_user_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this user.
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    delete:
+      operationId: core_user_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this user.
+        required: true
+      tags:
+      - core
+      responses:
+        '204':
+          description: No response body
+  /dj-rest-auth/cognito/:
+    post:
+      operationId: dj_rest_auth_cognito_create
+      description: |-
+        class used for social authentications
+        example usage for facebook with access_token
+        -------------
+        from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
+
+        class FacebookLogin(SocialLoginView):
+            adapter_class = FacebookOAuth2Adapter
+        -------------
+
+        example usage for facebook with code
+
+        -------------
+        from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
+        from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+
+        class FacebookLogin(SocialLoginView):
+            adapter_class = FacebookOAuth2Adapter
+            client_class = OAuth2Client
+            callback_url = 'localhost:8000'
+        -------------
+      tags:
+      - dj-rest-auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SocialLogin'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SocialLogin'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SocialLogin'
+      security:
+      - tokenAuth: []
+      - jwtHeaderAuth: []
+      - jwtCookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SocialLogin'
+          description: ''
+  /dj-rest-auth/login/:
+    post:
+      operationId: dj_rest_auth_login_create
+      description: |-
+        Check the credentials and return the REST Token
+        if the credentials are valid and authenticated.
+        Calls Django Auth login method to register User ID
+        in Django session framework
+
+        Accept the following POST parameters: username, password
+        Return the REST Framework Token Object's key.
+      tags:
+      - dj-rest-auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Login'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Login'
+        required: true
+      security:
+      - tokenAuth: []
+      - jwtHeaderAuth: []
+      - jwtCookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JWT'
+          description: ''
+  /dj-rest-auth/logout/:
+    post:
+      operationId: dj_rest_auth_logout_create
+      description: |-
+        Calls Django logout method and delete the Token object
+        assigned to the current User object.
+
+        Accepts/Returns nothing.
+      tags:
+      - dj-rest-auth
+      security:
+      - tokenAuth: []
+      - jwtHeaderAuth: []
+      - jwtCookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestAuthDetail'
+          description: ''
+  /dj-rest-auth/password/change/:
+    post:
+      operationId: dj_rest_auth_password_change_create
+      description: |-
+        Calls Django Auth SetPasswordForm save method.
+
+        Accepts the following POST parameters: new_password1, new_password2
+        Returns the success/fail message.
+      tags:
+      - dj-rest-auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordChange'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordChange'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordChange'
+        required: true
+      security:
+      - tokenAuth: []
+      - jwtHeaderAuth: []
+      - jwtCookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestAuthDetail'
+          description: ''
+  /dj-rest-auth/password/reset/:
+    post:
+      operationId: dj_rest_auth_password_reset_create
+      description: |-
+        Calls Django Auth PasswordResetForm save method.
+
+        Accepts the following POST parameters: email
+        Returns the success/fail message.
+      tags:
+      - dj-rest-auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordReset'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordReset'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordReset'
+        required: true
+      security:
+      - tokenAuth: []
+      - jwtHeaderAuth: []
+      - jwtCookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestAuthDetail'
+          description: ''
+  /dj-rest-auth/password/reset/confirm/:
+    post:
+      operationId: dj_rest_auth_password_reset_confirm_create
+      description: |-
+        Password reset e-mail link is confirmed, therefore
+        this resets the user's password.
+
+        Accepts the following POST parameters: token, uid,
+            new_password1, new_password2
+        Returns the success/fail message.
+      tags:
+      - dj-rest-auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirm'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirm'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirm'
+        required: true
+      security:
+      - tokenAuth: []
+      - jwtHeaderAuth: []
+      - jwtCookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestAuthDetail'
+          description: ''
+  /dj-rest-auth/token/refresh/:
+    post:
+      operationId: dj_rest_auth_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - dj-rest-auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /dj-rest-auth/token/verify/:
+    post:
+      operationId: dj_rest_auth_token_verify_create
+      description: |-
+        Takes a token and indicates if it is valid.  This view provides no
+        information about a token's fitness for a particular use.
+      tags:
+      - dj-rest-auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenVerify'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenVerify'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenVerify'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenVerify'
+          description: ''
+  /dj-rest-auth/user/:
+    get:
+      operationId: dj_rest_auth_user_retrieve
+      description: |-
+        Reads and updates UserModel fields
+        Accepts GET, PUT, PATCH methods.
+
+        Default accepted fields: username, first_name, last_name
+        Default display fields: pk, username, email, first_name, last_name
+        Read-only fields: pk, email
+
+        Returns UserModel fields.
+      tags:
+      - dj-rest-auth
+      security:
+      - tokenAuth: []
+      - jwtHeaderAuth: []
+      - jwtCookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+          description: ''
+    put:
+      operationId: dj_rest_auth_user_update
+      description: |-
+        Reads and updates UserModel fields
+        Accepts GET, PUT, PATCH methods.
+
+        Default accepted fields: username, first_name, last_name
+        Default display fields: pk, username, email, first_name, last_name
+        Read-only fields: pk, email
+
+        Returns UserModel fields.
+      tags:
+      - dj-rest-auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDetails'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserDetails'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserDetails'
+        required: true
+      security:
+      - tokenAuth: []
+      - jwtHeaderAuth: []
+      - jwtCookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+          description: ''
+    patch:
+      operationId: dj_rest_auth_user_partial_update
+      description: |-
+        Reads and updates UserModel fields
+        Accepts GET, PUT, PATCH methods.
+
+        Default accepted fields: username, first_name, last_name
+        Default display fields: pk, username, email, first_name, last_name
+        Read-only fields: pk, email
+
+        Returns UserModel fields.
+      tags:
+      - dj-rest-auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserDetails'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserDetails'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserDetails'
+      security:
+      - tokenAuth: []
+      - jwtHeaderAuth: []
+      - jwtCookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+          description: ''
+components:
+  schemas:
+    Action:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_by_email:
+          type: string
+          format: email
+          readOnly: true
+        updated_by_email:
+          type: string
+          format: email
+          readOnly: true
+        organization_name:
+          type: string
+          readOnly: true
+        organization_id:
+          type: string
+          readOnly: true
+        is_deleted:
+          type: boolean
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        output_column_name:
+          type: string
+          maxLength: 200
+        output_column_type:
+          $ref: '#/components/schemas/OutputColumnTypeEnum'
+        action_type:
+          $ref: '#/components/schemas/ActionTypeEnum'
+        description:
+          type: string
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
+        organization:
+          type: string
+          format: uuid
+          nullable: true
+        owner:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - created_at
+      - created_by_email
+      - description
+      - id
+      - organization_id
+      - organization_name
+      - output_column_name
+      - updated_at
+      - updated_by_email
+    ActionTypeEnum:
+      enum:
+      - EXTRACT
+      - GENERATE
+      type: string
+      description: |-
+        * `EXTRACT` - Extraction
+        * `GENERATE` - Generation
+    Asset:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_by_email:
+          type: string
+          format: email
+          readOnly: true
+        updated_by_email:
+          type: string
+          format: email
+          readOnly: true
+        organization_name:
+          type: string
+          readOnly: true
+        organization_id:
+          type: string
+          readOnly: true
+        is_deleted:
+          type: boolean
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        url:
+          type: string
+          format: uri
+          maxLength: 500
+        upload_source:
+          $ref: '#/components/schemas/UploadSourceEnum'
+        file_type:
+          $ref: '#/components/schemas/FileTypeEnum'
+        gdrive_file_id:
+          type: string
+          nullable: true
+          maxLength: 100
+        gdrive_credentials:
+          nullable: true
+        s3_bucket:
+          type: string
+          nullable: true
+          maxLength: 100
+        s3_key:
+          type: string
+          nullable: true
+          maxLength: 500
+        s3_credentials:
+          nullable: true
+        dropbox_path:
+          type: string
+          nullable: true
+          maxLength: 1024
+        dropbox_access_token:
+          nullable: true
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
+        organization:
+          type: string
+          format: uuid
+          nullable: true
+        owner:
+          type: string
+          format: uuid
+          nullable: true
+        project:
+          type: string
+          format: uuid
+      required:
+      - created_at
+      - created_by_email
+      - description
+      - id
+      - name
+      - organization_id
+      - organization_name
+      - project
+      - updated_at
+      - updated_by_email
+      - url
+    FileTypeEnum:
+      enum:
+      - PDF
+      - MP4
+      - DOC
+      - TXT
+      - JPEG
+      - JPG
+      - PNG
+      - MP3
+      - OTHER
+      type: string
+      description: |-
+        * `PDF` - Pdf
+        * `MP4` - Mp4
+        * `DOC` - Doc
+        * `TXT` - Text
+        * `JPEG` - Jpeg
+        * `JPG` - Jpg
+        * `PNG` - Png
+        * `MP3` - Mp3
+        * `OTHER` - Other
+    JWT:
+      type: object
+      description: Serializer for JWT authentication.
+      properties:
+        access:
+          type: string
+        refresh:
+          type: string
+        user:
+          $ref: '#/components/schemas/UserDetails'
+      required:
+      - access
+      - refresh
+      - user
+    Login:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+      - password
+    ModelConfiguration:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_by_email:
+          type: string
+          format: email
+          readOnly: true
+        updated_by_email:
+          type: string
+          format: email
+          readOnly: true
+        organization_name:
+          type: string
+          readOnly: true
+        organization_id:
+          type: string
+          readOnly: true
+        is_deleted:
+          type: boolean
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        key:
+          type: string
+          maxLength: 200
+        model_config_data: {}
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
+        organization:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - created_at
+      - created_by_email
+      - id
+      - key
+      - name
+      - organization_id
+      - organization_name
+      - updated_at
+      - updated_by_email
+    Organization:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        owner:
+          type: string
+          format: uuid
+          readOnly: true
+        owner_email:
+          type: string
+          format: email
+          readOnly: true
+        owner_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - owner
+      - owner_email
+      - owner_name
+      - updated_at
+    OutputColumnTypeEnum:
+      enum:
+      - TEXT
+      - NUMBER
+      - DATE
+      type: string
+      description: |-
+        * `TEXT` - Text
+        * `NUMBER` - Number
+        * `DATE` - Date
+    PaginatedActionList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Action'
+    PaginatedAssetList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Asset'
+    PaginatedModelConfigurationList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelConfiguration'
+    PaginatedOrganizationList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Organization'
+    PaginatedProjectList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Project'
+    PaginatedTaskList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+    PaginatedUserList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    PasswordChange:
+      type: object
+      properties:
+        new_password1:
+          type: string
+          maxLength: 128
+        new_password2:
+          type: string
+          maxLength: 128
+      required:
+      - new_password1
+      - new_password2
+    PasswordReset:
+      type: object
+      description: Serializer for requesting a password reset e-mail.
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+      - email
+    PasswordResetConfirm:
+      type: object
+      description: Serializer for confirming a password reset attempt.
+      properties:
+        new_password1:
+          type: string
+          maxLength: 128
+        new_password2:
+          type: string
+          maxLength: 128
+        uid:
+          type: string
+        token:
+          type: string
+      required:
+      - new_password1
+      - new_password2
+      - token
+      - uid
+    PatchedAction:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_by_email:
+          type: string
+          format: email
+          readOnly: true
+        updated_by_email:
+          type: string
+          format: email
+          readOnly: true
+        organization_name:
+          type: string
+          readOnly: true
+        organization_id:
+          type: string
+          readOnly: true
+        is_deleted:
+          type: boolean
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        output_column_name:
+          type: string
+          maxLength: 200
+        output_column_type:
+          $ref: '#/components/schemas/OutputColumnTypeEnum'
+        action_type:
+          $ref: '#/components/schemas/ActionTypeEnum'
+        description:
+          type: string
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
+        organization:
+          type: string
+          format: uuid
+          nullable: true
+        owner:
+          type: string
+          format: uuid
+          nullable: true
+    PatchedAsset:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_by_email:
+          type: string
+          format: email
+          readOnly: true
+        updated_by_email:
+          type: string
+          format: email
+          readOnly: true
+        organization_name:
+          type: string
+          readOnly: true
+        organization_id:
+          type: string
+          readOnly: true
+        is_deleted:
+          type: boolean
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        url:
+          type: string
+          format: uri
+          maxLength: 500
+        upload_source:
+          $ref: '#/components/schemas/UploadSourceEnum'
+        file_type:
+          $ref: '#/components/schemas/FileTypeEnum'
+        gdrive_file_id:
+          type: string
+          nullable: true
+          maxLength: 100
+        gdrive_credentials:
+          nullable: true
+        s3_bucket:
+          type: string
+          nullable: true
+          maxLength: 100
+        s3_key:
+          type: string
+          nullable: true
+          maxLength: 500
+        s3_credentials:
+          nullable: true
+        dropbox_path:
+          type: string
+          nullable: true
+          maxLength: 1024
+        dropbox_access_token:
+          nullable: true
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
+        organization:
+          type: string
+          format: uuid
+          nullable: true
+        owner:
+          type: string
+          format: uuid
+          nullable: true
+        project:
+          type: string
+          format: uuid
+    PatchedModelConfiguration:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_by_email:
+          type: string
+          format: email
+          readOnly: true
+        updated_by_email:
+          type: string
+          format: email
+          readOnly: true
+        organization_name:
+          type: string
+          readOnly: true
+        organization_id:
+          type: string
+          readOnly: true
+        is_deleted:
+          type: boolean
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        key:
+          type: string
+          maxLength: 200
+        model_config_data: {}
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
+        organization:
+          type: string
+          format: uuid
+          nullable: true
+    PatchedOrganization:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        owner:
+          type: string
+          format: uuid
+          readOnly: true
+        owner_email:
+          type: string
+          format: email
+          readOnly: true
+        owner_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedProject:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_by_email:
+          type: string
+          format: email
+          readOnly: true
+        updated_by_email:
+          type: string
+          format: email
+          readOnly: true
+        organization_name:
+          type: string
+          readOnly: true
+        organization_id:
+          type: string
+          readOnly: true
+        is_deleted:
+          type: boolean
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
+        organization:
+          type: string
+          format: uuid
+          nullable: true
+        owner:
+          type: string
+          format: uuid
+          nullable: true
+        collaborators:
+          type: array
+          items:
+            type: string
+            format: uuid
+    PatchedTask:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_by_email:
+          type: string
+          format: email
+          readOnly: true
+        updated_by_email:
+          type: string
+          format: email
+          readOnly: true
+        organization_name:
+          type: string
+          readOnly: true
+        organization_id:
+          type: string
+          readOnly: true
+        is_deleted:
+          type: boolean
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        system_prompt:
+          type: string
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        description:
+          type: string
+          nullable: true
+        result_file_url:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        process_results: {}
+        total_files:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        processed_files:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        failed_files:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        started_at:
+          type: string
+          format: date-time
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
+        organization:
+          type: string
+          format: uuid
+          nullable: true
+        owner:
+          type: string
+          format: uuid
+          nullable: true
+        project:
+          type: string
+          format: uuid
+        assets:
+          type: array
+          items:
+            type: string
+            format: uuid
+        actions:
+          type: array
+          items:
+            type: string
+            format: uuid
+    PatchedUser:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_by_email:
+          type: string
+          format: email
+          readOnly: true
+        updated_by_email:
+          type: string
+          format: email
+          readOnly: true
+        organization_name:
+          type: string
+          readOnly: true
+        organization_id:
+          type: string
+          readOnly: true
+        password:
+          type: string
+          maxLength: 128
+        last_login:
+          type: string
+          format: date-time
+          nullable: true
+        is_superuser:
+          type: boolean
+          title: Superuser status
+          description: Designates that this user has all permissions without explicitly
+            assigning them.
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        is_staff:
+          type: boolean
+          title: Staff status
+          description: Designates whether the user can log into this admin site.
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this user should be treated as active. Unselect
+            this instead of deleting accounts.
+        date_joined:
+          type: string
+          format: date-time
+        is_deleted:
+          type: boolean
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
+        organization:
+          type: string
+          format: uuid
+          nullable: true
+        personal_organization:
+          type: string
+          format: uuid
+          nullable: true
+        groups:
+          type: array
+          items:
+            type: integer
+          description: The groups this user belongs to. A user will get all permissions
+            granted to each of their groups.
+        user_permissions:
+          type: array
+          items:
+            type: integer
+          description: Specific permissions for this user.
+    PatchedUserDetails:
+      type: object
+      description: User model w/o password
+      properties:
+        pk:
+          type: string
+          format: uuid
+          readOnly: true
+          title: Id
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          readOnly: true
+          title: Email address
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_by_email:
+          type: string
+          format: email
+          readOnly: true
+        updated_by_email:
+          type: string
+          format: email
+          readOnly: true
+        organization_name:
+          type: string
+          readOnly: true
+        organization_id:
+          type: string
+          readOnly: true
+        is_deleted:
+          type: boolean
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
+        organization:
+          type: string
+          format: uuid
+          nullable: true
+        owner:
+          type: string
+          format: uuid
+          nullable: true
+        collaborators:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+      - created_at
+      - created_by_email
+      - description
+      - id
+      - name
+      - organization_id
+      - organization_name
+      - updated_at
+      - updated_by_email
+    RestAuthDetail:
+      type: object
+      properties:
+        detail:
+          type: string
+          readOnly: true
+      required:
+      - detail
+    SocialLogin:
+      type: object
+      properties:
+        access_token:
+          type: string
+        code:
+          type: string
+        id_token:
+          type: string
+    StatusEnum:
+      enum:
+      - PENDING
+      - RUNNING
+      - FINISHED
+      - FAILED
+      type: string
+      description: |-
+        * `PENDING` - Pending
+        * `RUNNING` - Running
+        * `FINISHED` - Finished
+        * `FAILED` - Failed
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_by_email:
+          type: string
+          format: email
+          readOnly: true
+        updated_by_email:
+          type: string
+          format: email
+          readOnly: true
+        organization_name:
+          type: string
+          readOnly: true
+        organization_id:
+          type: string
+          readOnly: true
+        is_deleted:
+          type: boolean
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        system_prompt:
+          type: string
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        description:
+          type: string
+          nullable: true
+        result_file_url:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        process_results: {}
+        total_files:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        processed_files:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        failed_files:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        started_at:
+          type: string
+          format: date-time
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
+        organization:
+          type: string
+          format: uuid
+          nullable: true
+        owner:
+          type: string
+          format: uuid
+          nullable: true
+        project:
+          type: string
+          format: uuid
+        assets:
+          type: array
+          items:
+            type: string
+            format: uuid
+        actions:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+      - created_at
+      - created_by_email
+      - id
+      - name
+      - organization_id
+      - organization_name
+      - project
+      - system_prompt
+      - updated_at
+      - updated_by_email
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - access
+      - refresh
+    TokenVerify:
+      type: object
+      properties:
+        token:
+          type: string
+          writeOnly: true
+      required:
+      - token
+    UploadSourceEnum:
+      enum:
+      - UPLOAD
+      - GOOGLE_DRIVE
+      - DROPBOX
+      - AWS_S3
+      type: string
+      description: |-
+        * `UPLOAD` - Upload
+        * `GOOGLE_DRIVE` - Google Drive
+        * `DROPBOX` - DropBox
+        * `AWS_S3` - Amazon S3
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_by_email:
+          type: string
+          format: email
+          readOnly: true
+        updated_by_email:
+          type: string
+          format: email
+          readOnly: true
+        organization_name:
+          type: string
+          readOnly: true
+        organization_id:
+          type: string
+          readOnly: true
+        password:
+          type: string
+          maxLength: 128
+        last_login:
+          type: string
+          format: date-time
+          nullable: true
+        is_superuser:
+          type: boolean
+          title: Superuser status
+          description: Designates that this user has all permissions without explicitly
+            assigning them.
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        is_staff:
+          type: boolean
+          title: Staff status
+          description: Designates whether the user can log into this admin site.
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this user should be treated as active. Unselect
+            this instead of deleting accounts.
+        date_joined:
+          type: string
+          format: date-time
+        is_deleted:
+          type: boolean
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
+        organization:
+          type: string
+          format: uuid
+          nullable: true
+        personal_organization:
+          type: string
+          format: uuid
+          nullable: true
+        groups:
+          type: array
+          items:
+            type: integer
+          description: The groups this user belongs to. A user will get all permissions
+            granted to each of their groups.
+        user_permissions:
+          type: array
+          items:
+            type: integer
+          description: Specific permissions for this user.
+      required:
+      - created_at
+      - created_by_email
+      - id
+      - organization_id
+      - organization_name
+      - password
+      - updated_at
+      - updated_by_email
+      - username
+    UserDetails:
+      type: object
+      description: User model w/o password
+      properties:
+        pk:
+          type: string
+          format: uuid
+          readOnly: true
+          title: Id
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          readOnly: true
+          title: Email address
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+      required:
+      - email
+      - pk
+      - username
+  securitySchemes:
+    jwtCookieAuth:
+      type: apiKey
+      in: cookie
+      name: nara-app-auth
+    jwtHeaderAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token-based authentication with required prefix "Token"
