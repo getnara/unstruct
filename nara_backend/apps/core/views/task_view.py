@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 import logging
 import os
+import time
 
 from apps.common.views import NBaselViewSet
 from apps.core.models import Task
@@ -20,6 +21,7 @@ from apps.common.utils.snowflake_utils import SnowflakeManager
 from apps.common.mixins.organization_mixin import OrganizationMixin
 from django.core.exceptions import ValidationError
 from apps.core.models.asset import ASSET_FILE_TYPE
+from apps.common.middleware.timing_middleware import ViewTimingContextManager
 
 logger = logging.getLogger(__name__)
 
@@ -31,70 +33,86 @@ class TaskViewSet(OrganizationMixin, NBaselViewSet):
     def get_queryset(self):
         return super().get_queryset().filter(organization=self.get_organization())
 
+    def list(self, request, *args, **kwargs):
+        with ViewTimingContextManager("query_tasks") as timing:
+            queryset = self.get_queryset()
+        
+        with ViewTimingContextManager("serialize_tasks") as serialize_timing:
+            serializer = self.get_serializer(queryset, many=True)
+            response = Response(serializer.data)
+        
+        # Add timing headers
+        response["Server-Timing"] = (
+            f"query_tasks;dur={timing.duration:.2f};desc='Query Tasks',"
+            f"serialize;dur={serialize_timing.duration:.2f};desc='Serialize Tasks'"
+        )
+        return response
+
+    def retrieve(self, request, *args, **kwargs):
+        with ViewTimingContextManager("query_task") as timing:
+            instance = self.get_object()
+        
+        with ViewTimingContextManager("serialize_task") as serialize_timing:
+            serializer = self.get_serializer(instance)
+            response = Response(serializer.data)
+        
+        # Add timing headers
+        response["Server-Timing"] = (
+            f"query_task;dur={timing.duration:.2f};desc='Query Task',"
+            f"serialize;dur={serialize_timing.duration:.2f};desc='Serialize Task'"
+        )
+        return response
+
     @action(detail=True, methods=["post"], url_path="process")
     def process_task(self, request, pk=None):
         try:
-            task = self.get_object()
-            organization = task.organization
+            timings = []
             
-            # Log organization and subscription details
-            logger.info(f"Processing task for organization: {organization.id}")
-            logger.info(f"Organization subscription plan: {organization.current_subscription_plan}")
-            logger.info(f"Organization owner email: {organization.owner.email}")
+            with ViewTimingContextManager("get_task") as timing:
+                task = self.get_object()
+                organization = task.organization
+                timings.append(f"get_task;dur={timing.duration:.2f};desc='Get Task'")
             
-            # Get all assets for this task
-            assets = task.assets.all()
-            if not assets:
-                return Response(
-                    {"error": "No assets found for this task"},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+            with ViewTimingContextManager("get_assets") as timing:
+                assets = task.assets.all()
+                if not assets:
+                    return Response(
+                        {"error": "No assets found for this task"},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                timings.append(f"get_assets;dur={timing.duration:.2f};desc='Get Assets'")
             
-            # Log asset details
-            for asset in assets:
-                logger.info(f"Processing asset: {asset.id}, type: {asset.file_type}")
+            with ViewTimingContextManager("process_assets") as timing:
+                for asset in assets:
+                    file_path = asset.get_file_path()
+                    size_in_gb = os.path.getsize(file_path) / (1024 * 1024 * 1024)
+                    
+                    if asset.file_type == ASSET_FILE_TYPE.PDF:
+                        organization.can_process_pdf()
+                        organization.increment_pdf_count()
+                    elif asset.file_type == ASSET_FILE_TYPE.MP4:
+                        organization.can_process_video(size_in_gb)
+                        organization.add_video_usage(size_in_gb)
+                    elif asset.file_type == ASSET_FILE_TYPE.MP3:
+                        organization.can_process_audio(size_in_gb)
+                        organization.add_audio_usage(size_in_gb)
+                timings.append(f"process_assets;dur={timing.duration:.2f};desc='Process Assets'")
             
-            # Process each asset with appropriate limits
-            for asset in assets:
-                # Get file size in GB for media files
-                file_path = asset.get_file_path()
-                size_in_gb = os.path.getsize(file_path) / (1024 * 1024 * 1024)
+            with ViewTimingContextManager("task_processing") as timing:
+                task.status = "RUNNING"
+                task.save()
                 
-                # Check file type and apply appropriate limits
-                if asset.file_type == ASSET_FILE_TYPE.PDF:
-                    # Check PDF processing limit
-                    logger.info(f"Checking PDF processing limit for org {organization.id}")
-                    organization.can_process_pdf()
-                    organization.increment_pdf_count()
-                    logger.info("PDF processing limit check passed")
-                    
-                elif asset.file_type == ASSET_FILE_TYPE.MP4:
-                    # Check video processing limit
-                    logger.info(f"Checking video processing limit for org {organization.id}, size: {size_in_gb}GB")
-                    organization.can_process_video(size_in_gb)
-                    organization.add_video_usage(size_in_gb)
-                    logger.info("Video processing limit check passed")
-                    
-                elif asset.file_type == ASSET_FILE_TYPE.MP3:
-                    # Check audio processing limit
-                    logger.info(f"Checking audio processing limit for org {organization.id}, size: {size_in_gb}GB")
-                    organization.can_process_audio(size_in_gb)
-                    organization.add_audio_usage(size_in_gb)
-                    logger.info("Audio processing limit check passed")
+                processor = TaskProcessor()
+                structured_output = processor.process(task)
+                
+                task.process_results = structured_output
+                task.status = "FINISHED"
+                task.save()
+                timings.append(f"task_processing;dur={timing.duration:.2f};desc='Task Processing'")
             
-            # Process the task
-            task.status = "RUNNING"
-            task.save()
-            
-            processor = TaskProcessor()
-            structured_output = processor.process(task)
-            
-            # Store the process results
-            task.process_results = structured_output
-            task.status = "FINISHED"
-            task.save()
-            
-            return Response(structured_output, status=status.HTTP_200_OK)
+            response = Response(structured_output, status=status.HTTP_200_OK)
+            response["Server-Timing"] = ", ".join(timings)
+            return response
             
         except ValidationError as e:
             logger.error(f"Validation error: {str(e)}")
