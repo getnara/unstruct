@@ -4,13 +4,20 @@ RUN apt-get update -qq && apt-get install -y -qq \
     apt-get clean all &&\
     rm -rf /var/apt/lists/* &&\
     rm -rf /var/cache/apt/*
+
 ENV PYTHONUNBUFFERED 1
-WORKDIR /nara-backend
-COPY .env .env 
-COPY . /nara-backend
+WORKDIR /app/nara_backend
+
+# Copy everything to the working directory
+COPY . .
+
+# Install dependencies
 RUN pip install gunicorn
 RUN pip install -r requirements.txt
-COPY ./scripts /app/nara_backend/scripts/
-RUN chmod +x /app/nara_backend/scripts/*.sh
+
+# Make scripts executable (update path to match actual location)
+RUN chmod +x scripts/*.sh
+
 EXPOSE 8000
-ENTRYPOINT ["/app/nara_backend/scripts/run_server.sh"]
+# Update entrypoint to use correct script path
+ENTRYPOINT ["scripts/run_server.sh"]

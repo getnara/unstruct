@@ -1,7 +1,10 @@
 #!/bin/sh
 
+# Change to the directory containing manage.py (we're already in /app/nara_backend)
+cd /app/nara_backend
+
 # Run migrations
-MIGRATION_FILE="/app/nara_backend/scripts/run_migrations.sh"
+MIGRATION_FILE="scripts/run_migrations.sh"
 if [ -f "$MIGRATION_FILE" ]; then
     chmod +x "$MIGRATION_FILE"
     /bin/bash "$MIGRATION_FILE"
@@ -20,5 +23,3 @@ exec gunicorn config.wsgi:application \
     --access-logfile - \
     --error-logfile - \
     --log-level info
-
-exec "$@"
