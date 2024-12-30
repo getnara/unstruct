@@ -10,10 +10,10 @@ gunicorn==21.2.0
 
 # AI and ML Dependencies
 openai==1.48.0
-langchain==0.3.3
-langchain-core==0.3.21
-langchain-community==0.3.2
-langchain-experimental==0.3.3
+langchain-core>=0.1.30
+langchain-community>=0.0.28
+langchain>=0.1.12
+langchain-experimental>=0.0.52
 langsmith==0.1.128
 llama-index-core==0.11.13.post1
 llama-index-readers-smart-pdf-loader==0.2.0
@@ -21,10 +21,14 @@ llama-parse==0.5.7
 transformers==4.45.0
 sentence-transformers==2.5.1
 deepgram-sdk==3.7.6
+open_clip_torch==2.20.0
+ftfy==6.1.1
+regex==2023.10.3
 
 # ML Framework
-torch==2.2.1
-torchvision==0.17.1
+--find-links https://download.pytorch.org/whl/torch_stable.html
+torch==2.2.1+cpu
+torchvision==0.17.1+cpu
 tensorboard==2.15.1
 
 # Data Processing
@@ -36,7 +40,7 @@ nltk==3.9.1
 
 # File Processing
 Pillow==10.4.0
-opencv-python==4.10.0.84
+opencv-python-headless==4.10.0.84
 pdf2image==1.17.0
 pypdf==5.1.0
 moviepy==1.0.3
