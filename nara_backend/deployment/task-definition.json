@@ -16,8 +16,72 @@
                     "value": "config.settings.production"
                 },
                 {
+                    "name": "DJANGO_ENV",
+                    "value": "production"
+                },
+                {
+                    "name": "DEBUG",
+                    "value": "False"
+                },
+                {
                     "name": "SECRET_KEY",
                     "value": "django-insecure-jkz%ahq_oqyhm-t@)t)lkov8&u+glu+h1(rhmc(6p%3^ieu@34"
+                },
+                {
+                    "name": "API_HOST",
+                    "value": "api.getnara.ai"
+                },
+                {
+                    "name": "API_PORT",
+                    "value": "443"
+                },
+                {
+                    "name": "API_PROTOCOL",
+                    "value": "https"
+                },
+                {
+                    "name": "ALLOWED_HOSTS",
+                    "value": "api.getnara.ai,getnara.ai,www.getnara.ai"
+                },
+                {
+                    "name": "CORS_ALLOWED_ORIGINS",
+                    "value": "https://getnara.ai,https://www.getnara.ai,http://localhost:3000"
+                },
+                {
+                    "name": "CORS_ALLOW_CREDENTIALS",
+                    "value": "True"
+                },
+                {
+                    "name": "CORS_ALLOW_METHODS",
+                    "value": "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+                },
+                {
+                    "name": "CORS_ALLOW_HEADERS",
+                    "value": "accept,accept-encoding,authorization,content-type,dnt,origin,user-agent,x-csrftoken,x-requested-with"
+                },
+                {
+                    "name": "GOOGLE_CLIENT_ID",
+                    "value": "577261951803-g0fk8m50ovmjll7guq713dj7pahcufuq.apps.googleusercontent.com"
+                },
+                {
+                    "name": "GOOGLE_CLIENT_SECRET",
+                    "value": "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"
+                },
+                {
+                    "name": "GOOGLE_OAUTH_REDIRECT_URI",
+                    "value": "https://api.getnara.ai/core/google-drive/callback/"
+                },
+                {
+                    "name": "GOOGLE_OAUTH_SCOPES",
+                    "value": "https://www.googleapis.com/auth/drive.readonly"
+                },
+                {
+                    "name": "DROPBOX_CLIENT_ID",
+                    "value": "ybpzu039fxuepzs"
+                },
+                {
+                    "name": "DROPBOX_CLIENT_SECRET",
+                    "value": "b97bkojewuose9h"
                 },
                 {
                     "name": "OPENAI_API_KEY",

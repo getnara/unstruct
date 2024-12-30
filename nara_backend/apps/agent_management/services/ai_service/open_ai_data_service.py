@@ -84,71 +84,63 @@ Respond in the following JSON format:
 
 class ExtractionHandler:
     """Base class for handling different asset types."""
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
+
     def construct_prompt(self, field_name: str, description: str, asset: Asset) -> Union[str, List[HumanMessage]]:
         raise NotImplementedError
 
     def sanitize_document_content(self, document: str) -> str:
-        # Remove any unwanted characters or formatting
         return document.replace("\n", " ").strip()
 
 class DocumentExtractionHandler(ExtractionHandler):
     def __init__(self, chat_prompt: ChatPromptTemplate):
+        super().__init__()  # Initialize base class logger
         self.chat_prompt = chat_prompt
 
     def construct_prompt(self, field_name: str, description: str, asset: Asset) -> str:
-        doc_path = asset.get_document_from_asset()
-        vector_store = VectorStore(str(asset.id))
-        vector_store.index_document(doc_path=doc_path)
-        data = vector_store.invoke(f"{field_name} {description}")
-        frames = data['images']       # Assume this method retrieves frame data
-        print("len ********", len(frames))
-        print("data text ", data['texts'] )
-        
-        if not field_name or not description:
-            raise ValueError("Field name, description, frames are empty.")
         try:
+            doc_path = asset.get_document_from_asset()
+            self.logger.info(f"Got document path: {doc_path}")
+            
+            vector_store = VectorStore(str(asset.id))
+            vector_store.index_document(doc_path=doc_path)
+            data = vector_store.invoke(f"{field_name} {description}")
+            
+            self.logger.info(f"Got vector store data with {len(data.get('texts', []))} text chunks")
+            
+            if not field_name or not description:
+                raise ValueError("Field name or description is empty")
+
             px = self.chat_prompt.format_prompt(
                 field_name=field_name,
                 description=description,
             )
-            
-            
-            human_messages = [
-                HumanMessage(
-                    content=[
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/jpeg;base64,{img}"
-                            },
-                        } 
-                    for img in frames]
-                )
-            ]
 
             text_content = []
-            if data['texts']:
+            if data.get('texts'):
                 text_content.append(
-                        HumanMessage(
-                            content= "\n".join(data['texts'])
-                        ) )
-        
-            
-            return px.messages + text_content + human_messages
-        except Exception as e:
-            logger.error(f"Error constructing extraction prompt for videos: {e}")
-            raise
+                    HumanMessage(content="\n".join(data['texts']))
+                )
 
+            return px.messages + text_content
+        except Exception as e:
+            self.logger.exception(f"Error constructing document prompt: {str(e)}")
+            raise
 
 class ImageExtractionHandler(ExtractionHandler):
     def __init__(self, chat_prompt: ChatPromptTemplate):
+        super().__init__()
         self.chat_prompt = chat_prompt
 
     def construct_prompt(self, field_name: str, description: str, asset: Asset) -> List[HumanMessage]:
-        images = asset.get_images_from_asset()  # Assume this method retrieves image data
-        if not field_name or not description or not images:
-            raise ValueError("Field name, description, or image data is empty.")
         try:
+            images = asset.get_images_from_asset()
+            self.logger.info(f"Got {len(images)} images from asset")
+            
+            if not field_name or not description or not images:
+                raise ValueError("Field name, description, or image data is empty")
+
             px = self.chat_prompt.format_prompt(
                 field_name=field_name,
                 description=description,
@@ -156,69 +148,60 @@ class ImageExtractionHandler(ExtractionHandler):
             
             human_messages = [
                 HumanMessage(
-                    content=[
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/jpeg;base64,{img}"
-                            },
-                        } 
-                    for img in images]
+                    content=[{
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/jpeg;base64,{img}"}
+                    } for img in images]
                 )
             ]
             return px.messages + human_messages
         except Exception as e:
-            logger.error(f"Error constructing extraction prompt for images: {e}")
+            self.logger.exception(f"Error constructing image prompt: {str(e)}")
             raise
 
 class VideoExtractionHandler(ExtractionHandler):
     def __init__(self, chat_prompt: ChatPromptTemplate):
+        super().__init__()
         self.chat_prompt = chat_prompt
 
     def construct_prompt(self, field_name: str, description: str, asset: Asset) -> List[HumanMessage]:
-        video_path = asset.get_video()
-        vector_store = VectorStore(str(asset.id))
-        vector_store.index_video(video_path=video_path)
-        data = vector_store.invoke(f"{field_name} {description}")
-        frames = data['images']       # Assume this method retrieves frame data
-        print("len ********", len(frames))
-        print("transcript",  data['texts'])
-        
-        if not field_name or not description:
-            raise ValueError("Field name, description, frames are empty.")
         try:
+            video_path = asset.get_video()
+            self.logger.info(f"Got video path: {video_path}")
+            
+            vector_store = VectorStore(str(asset.id))
+            vector_store.index_video(video_path=video_path)
+            data = vector_store.invoke(f"{field_name} {description}")
+            
+            frames = data.get('images', [])
+            self.logger.info(f"Got {len(frames)} frames from video")
+            
+            if not field_name or not description:
+                raise ValueError("Field name or description is empty")
+
             px = self.chat_prompt.format_prompt(
                 field_name=field_name,
                 description=description,
             )
             
-            
             human_messages = [
                 HumanMessage(
-                    content=[
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/jpeg;base64,{img}"
-                            },
-                        } 
-                    for img in frames]
+                    content=[{
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/jpeg;base64,{img}"}
+                    } for img in frames]
                 )
             ]
 
-            
-            #Add transcripts to the prompt
             transcript_message = []
-            if data['texts']:
+            if data.get('texts'):
                 transcript_message.append(
-                        HumanMessage(
-                            content= "\n".join(data['texts'])
-                        ) )
-                    
+                    HumanMessage(content="\n".join(data['texts']))
+                )
             
             return px.messages + transcript_message + human_messages
         except Exception as e:
-            logger.error(f"Error constructing extraction prompt for videos: {e}")
+            self.logger.exception(f"Error constructing video prompt: {str(e)}")
             raise
 
 class AudioExtractionHandler(ExtractionHandler):

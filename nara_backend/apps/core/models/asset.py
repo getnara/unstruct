@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from llama_parse import LlamaParse
 import nest_asyncio
 import os
 import concurrent.futures
@@ -8,28 +7,31 @@ from typing import List, Generator
 
 from apps.common.utils.s3_utils import download_from_s3, S3Service
 from apps.common.utils.gdrive_utils import GoogleDriveService
-from apps.common.utils.dropbox_utils import DropboxService  # Import DropboxService
+from apps.common.utils.dropbox_utils import DropboxService
 
 from apps.common.models import NBaseWithOwnerModel
 
 from .project import Project
+from .constants import ASSET_UPLOAD_SOURCE
 
-
-import cv2  # We're using OpenCV to read video, to install !pip install opencv-python
+import cv2
 import base64
 import time
 
 import os
 import requests
+from django.utils import timezone
+
+from django.conf import settings
+
+import logging
+
+import boto3
+
+# Configure logger
+logger = logging.getLogger(__name__)
 
 nest_asyncio.apply()
-
-class ASSET_UPLOAD_SOURCE(models.TextChoices):
-    UPLOAD = "UPLOAD", _("Upload")
-    GDRIVE = "GOOGLE_DRIVE", _("Google Drive")
-    DROPBOX = "DROPBOX", _("DropBox")
-    AWS_S3 = "AWS_S3", _("Amazon S3")
-
 
 class ASSET_FILE_TYPE(models.TextChoices):
     PDF = "PDF", _("Pdf")
@@ -41,6 +43,13 @@ class ASSET_FILE_TYPE(models.TextChoices):
     PNG = "PNG", _("Png")
     MP3 = "MP3", _("Mp3")
     OTHER = "OTHER", _("Other")
+
+
+class ASSET_UPLOAD_SOURCE(models.TextChoices):
+    UPLOAD = 'UPLOAD', 'Upload'
+    GOOGLE_DRIVE = 'GOOGLE_DRIVE', 'Google Drive'
+    DROPBOX = 'DROPBOX', 'Dropbox'
+    AWS_S3 = 'AWS_S3', 'AWS S3'
 
 
 class Asset(NBaseWithOwnerModel):
@@ -64,22 +73,45 @@ class Asset(NBaseWithOwnerModel):
         choices=ASSET_FILE_TYPE.choices,
         default=ASSET_FILE_TYPE.OTHER,
     )
-    gdrive_file_id = models.CharField(max_length=100, null=True, blank=True)
-    gdrive_credentials = models.JSONField(null=True, blank=True)
-    s3_bucket = models.CharField(max_length=100, null=True, blank=True)
-    s3_key = models.CharField(max_length=500, null=True, blank=True)
-    s3_credentials = models.JSONField(null=True, blank=True)
-    dropbox_path = models.CharField(max_length=1024, null=True, blank=True)
-    dropbox_access_token = models.JSONField(null=True, blank=True)
+    mime_type = models.CharField(max_length=100, null=True, blank=True)
+    size = models.CharField(max_length=20, null=True, blank=True)
+    
+    # Generic fields for all sources
+    source_file_id = models.CharField(max_length=500, null=True, blank=True)  # ID in the source system (gdrive_id, dropbox_id etc)
+    source_credentials = models.JSONField(null=True, blank=True)  # Source-specific credentials
+    metadata = models.JSONField(null=True, blank=True)  # Additional metadata like OAuth tokens
+
+    class Meta:
+        # Add this to ensure we only get non-deleted assets by default
+        default_manager_name = 'objects'
+        base_manager_name = 'objects'
 
     def __str__(self) -> str:
         return str(self.name)
     
+    def _find_file_in_s3(self, filename):
+        """Search for a file in S3 bucket and return its key"""
+        try:
+            s3 = boto3.client('s3', region_name=settings.AWS_S3_REGION)
+            logger.error(f"[DEBUG] Searching for file {filename} in bucket {settings.AWS_STORAGE_BUCKET_NAME}")
+            
+            paginator = s3.get_paginator('list_objects_v2')
+            for page in paginator.paginate(Bucket=settings.AWS_STORAGE_BUCKET_NAME):
+                if 'Contents' in page:
+                    for obj in page['Contents']:
+                        logger.error(f"[DEBUG] Found object: {obj['Key']}")
+                        if filename in obj['Key']:
+                            return obj['Key']
+            return None
+        except Exception as e:
+            logger.error(f"[DEBUG] Error searching S3: {str(e)}")
+            raise
+
     def get_file_path(self):
         """Get the local path or download the file if it's from an external source"""
-        local_path = f"/tmp/{self.name}"
+        local_path = f"/tmp/nara/assets/{self.id}/{self.name}"
         
-        if self.upload_source == ASSET_UPLOAD_SOURCE.GDRIVE:
+        if self.upload_source == ASSET_UPLOAD_SOURCE.GOOGLE_DRIVE:
             return self._download_from_gdrive()
         elif self.upload_source == ASSET_UPLOAD_SOURCE.AWS_S3:
             return self._download_from_s3()
@@ -87,37 +119,87 @@ class Asset(NBaseWithOwnerModel):
             return self._download_from_dropbox()
         else:
             if not os.path.exists(local_path):
-                download_from_s3(self.url, local_path)
+                os.makedirs(os.path.dirname(local_path), exist_ok=True)
+                try:
+                    # First find the actual file in S3
+                    filename = os.path.basename(self.url)
+                    logger.error(f"[DEBUG] Looking for file: {filename}")
+                    
+                    key = self._find_file_in_s3(filename)
+                    if not key:
+                        raise Exception(f"File {filename} not found in S3 bucket")
+                    
+                    logger.error(f"[DEBUG] Found file with key: {key}")
+                    
+                    # Use S3 client directly
+                    s3 = boto3.client(
+                        's3',
+                        region_name=settings.AWS_S3_REGION,
+                    )
+                    
+                    s3.download_file(settings.AWS_STORAGE_BUCKET_NAME, key, local_path)
+                    logger.error(f"[DEBUG] File downloaded successfully to {local_path}")
+                except Exception as e:
+                    logger.error(f"[DEBUG] Error downloading file from S3: {str(e)}")
+                    logger.error(f"[DEBUG] Error type: {type(e)}")
+                    raise
+                    
             return local_path
 
     def _download_from_gdrive(self):
-        """Download file from Google Drive using stored credentials"""
-        if not self.gdrive_file_id or not self.gdrive_credentials:
-            raise ValueError("Google Drive file ID and credentials are required")
+        """Download file from Google Drive using stored credentials or OAuth tokens"""
+        if not self.source_file_id:
+            raise ValueError("Google Drive file ID is required")
 
+        # Get OAuth tokens from metadata if available
+        oauth_tokens = self.metadata.get('oauth') if self.metadata else None
+        
         try:
-            gdrive_service = GoogleDriveService(self.gdrive_credentials)
+            logger.info(f"Starting Google Drive download for file {self.name}")
+            logger.info(f"File ID: {self.source_file_id}")
+            logger.info(f"OAuth tokens present: {bool(oauth_tokens)}")
+            logger.info(f"Using service credentials from settings: {bool(settings.GOOGLE_DRIVE_CREDENTIALS)}")
+            
+            gdrive_service = GoogleDriveService(
+                credentials_info=settings.GOOGLE_DRIVE_CREDENTIALS,
+                oauth_tokens=oauth_tokens
+            )
+
+            logger.info("Authenticating with Google Drive...")
             gdrive_service.authenticate()
+            logger.info("Authentication successful")
             
             # Create a temporary directory for downloads
             download_dir = f"/tmp/nara/gdrive/{self.id}"
             os.makedirs(download_dir, exist_ok=True)
+            logger.info(f"Created download directory: {download_dir}")
+            
+            local_path = os.path.join(download_dir, self.name)
+            logger.info(f"Will download to: {local_path}")
             
             file_info = gdrive_service.get_file_by_id(
-                self.gdrive_file_id, 
-                os.path.join(download_dir, self.name)
+                self.source_file_id, 
+                local_path
             )
+            
+            if os.path.exists(local_path):
+                file_size = os.path.getsize(local_path)
+                logger.info(f"File downloaded successfully. Size: {file_size} bytes")
+            else:
+                raise Exception(f"File not found at {local_path} after download")
+            
             return file_info['local_path']
         except Exception as e:
-            raise Exception(f"Error downloading from Google Drive: {str(e)}")
+            logger.exception(f"Error downloading from Google Drive: {str(e)}")
+            raise
 
     def _download_from_s3(self):
         """Download file from S3 using stored credentials"""
-        if not self.s3_bucket or not self.s3_key:
+        if not self.source_file_id:
             raise ValueError("S3 bucket and key are required")
 
         try:
-            s3_service = S3Service(self.s3_credentials)  # Credentials are optional
+            s3_service = S3Service(self.source_credentials)  # Credentials are optional
             s3_service.authenticate()
             
             # Create a temporary directory for downloads
@@ -125,8 +207,7 @@ class Asset(NBaseWithOwnerModel):
             os.makedirs(download_dir, exist_ok=True)
             
             file_info = s3_service.get_file_by_key(
-                self.s3_bucket,
-                self.s3_key,
+                self.source_file_id,
                 os.path.join(download_dir, self.name)
             )
             return file_info['local_path']
@@ -135,11 +216,11 @@ class Asset(NBaseWithOwnerModel):
 
     def _download_from_dropbox(self):
         """Download file from Dropbox using stored access token"""
-        if not self.dropbox_path or not self.dropbox_access_token:
+        if not self.source_file_id:
             raise ValueError("Dropbox path and access token are required")
 
         try:
-            dropbox_service = DropboxService(self.dropbox_access_token)
+            dropbox_service = DropboxService(self.source_credentials)
             dropbox_service.authenticate()
             
             # Create a temporary directory for downloads
@@ -147,7 +228,7 @@ class Asset(NBaseWithOwnerModel):
             os.makedirs(download_dir, exist_ok=True)
             
             file_info = dropbox_service.get_file_by_id(
-                self.dropbox_path,
+                self.source_file_id,
                 os.path.join(download_dir, self.name)
             )
             return file_info['local_path']
@@ -172,7 +253,14 @@ class Asset(NBaseWithOwnerModel):
         return self.get_file_path()
 
     def get_document_from_asset(self):
-        return self.get_file_path()
+        try:
+            logger.info(f"Getting document for asset {self.id} from source {self.upload_source}")
+            file_path = self.get_file_path()
+            logger.info(f"Got file path: {file_path}")
+            return file_path
+        except Exception as e:
+            logger.error(f"Error getting document from asset: {str(e)}")
+            raise
     
     def concatenate_documents_fast(self, documents: List) -> str:
         # Use list comprehension and join for faster concatenation
@@ -184,6 +272,15 @@ class Asset(NBaseWithOwnerModel):
             texts = list(executor.map(lambda doc: doc.get_text(), documents))
         return ''.join(texts)
     
+    def delete(self, *args, **kwargs):
+        """Override delete to optionally do hard delete"""
+        hard_delete = kwargs.pop('hard_delete', False)
+        if hard_delete:
+            super(NBaseWithOwnerModel, self).delete(*args, **kwargs)
+        else:
+            self.is_deleted = True
+            self.deleted_at = timezone.now()
+            self.save(update_fields=['is_deleted', 'deleted_at', 'updated_at'])
 
 def get_frames(video_path):
     video = cv2.VideoCapture(video_path)

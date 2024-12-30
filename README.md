@@ -87,13 +87,13 @@ Key files:
 
 2. Create and activate a virtual environment:
    ```
-   python -m venv venv
-   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+   python3.11 -m venv nara
+   source nara/bin/activate  # On Windows, use `nara\Scripts\activate`
    ```
 
 3. Install dependencies:
    ```
-   pip install -r requirements.txt
+   pip3.11 install -r requirements.txt
    ```
 
 4. Set up the environment variables:
@@ -109,6 +109,8 @@ Key files:
    ```
    python manage.py runserver
    ```
+
+Note: This project requires Python 3.11. Make sure you have it installed before proceeding with the setup.
 
 ## API Endpoints
 

@@ -18,8 +18,14 @@ from pathlib import Path
 
 import environ
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+# Initialize environ
+env = environ.Env()
+
+# Determine the base directory
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+# Read .env file
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -83,6 +89,9 @@ if ADDITIONAL_PLANS:
 
 # All available plan choices for the Organization model
 SUBSCRIPTION_PLAN_CHOICES = [(k, v) for k, v in SUBSCRIPTION_PLAN_NAMES.items()]
+
+# Frontend URL Configuration
+FRONTEND_URL = env.str('FRONTEND_URL', default='http://localhost:3000')
 
 # Application definition
 
@@ -251,6 +260,12 @@ REST_AUTH = {
 
 # Google Drive Settings
 GOOGLE_DRIVE_SERVICE_ACCOUNT = None  # This will be overridden by environment-specific settings
+GOOGLE_DRIVE_CREDENTIALS = {
+    'token_uri': 'https://oauth2.googleapis.com/token',
+    'client_id': env('GOOGLE_CLIENT_ID'),
+    'client_secret': env('GOOGLE_CLIENT_SECRET'),
+    'scopes': ['https://www.googleapis.com/auth/drive.readonly']
+}
 
 # AWS Cognito Settings
 USER_POOL_ID = env('USER_POOL_ID')
@@ -330,5 +345,48 @@ OPENAI_API_KEY = env("OPENAI_API_KEY")
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = ['*']
-CORS_ALLOW_HEADERS = ['*']
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'x-user-email',
+    'x-organization-id',
+]
+
+
+# Google OAuth Settings
+GOOGLE_CLIENT_ID = env("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = env("GOOGLE_CLIENT_SECRET")
+
+# Session Settings
+SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_SAMESITE = None
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_SAMESITE = None
+CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
+CSRF_USE_SESSIONS = True
+CSRF_COOKIE_HTTPONLY = True
+
+# Add near the top of the file, after the imports
+def get_api_base_url():
+    """Get the base URL for the API based on environment settings"""
+    protocol = env("API_PROTOCOL", default="http")
+    host = env("API_HOST", default="localhost")
+    port = env("API_PORT", default="8000")
+    
+    if env("DJANGO_ENV", default="development") == 'production':
+        return f"{protocol}://{host}"
+    return f"{protocol}://{host}:{port}"
+
+# Add this with your other Google settings
+GOOGLE_OAUTH_REDIRECT_URI = f"{get_api_base_url()}/core/google-drive/callback/"
+
+# Add this to your settings file
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:3000')
 

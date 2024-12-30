@@ -1,4 +1,9 @@
+import os
 from .base import *  # noqa: F401 F403
+
+# Force set the STRIPE_SECRET_KEY if not found
+if not os.getenv('STRIPE_SECRET_KEY'):
+    os.environ['STRIPE_SECRET_KEY'] = 'sk_test_xgs7c622Jl8F8DZl0x8Vcyty'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
@@ -22,3 +27,7 @@ GOOGLE_DRIVE_SERVICE_ACCOUNT = {
     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
     "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/your-service-account%40your-project.iam.gserviceaccount.com"  # Replace with your cert URL
 }
+
+# AWS S3 Configuration
+AWS_STORAGE_BUCKET_NAME = "naradashboardf031fb61e2b342a7b2bbeabad07a2a46edc15-prod"
+AWS_S3_REGION = "us-east-2"

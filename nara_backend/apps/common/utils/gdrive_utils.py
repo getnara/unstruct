@@ -1,29 +1,42 @@
-from google.oauth2 import service_account
+from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 import os
 import io
-from typing import List, Dict, Generator
+from typing import List, Dict, Generator, Optional, Union
 
 class GoogleDriveService:
-    """Service class to handle Google Drive operations using service account"""
+    """Service class to handle Google Drive operations using either service account or OAuth tokens"""
     
     SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
     
-    def __init__(self, service_account_info=None):
+    def __init__(self, credentials_info: Union[dict, str] = None, oauth_tokens: Optional[dict] = None):
         self.credentials = None
         self.service = None
-        self.service_account_info = service_account_info
-        if not self.service_account_info:
-            raise ValueError("Service account credentials are required")
+        self.credentials_info = credentials_info
+        self.oauth_tokens = oauth_tokens
+        
+        if not self.credentials_info and not self.oauth_tokens:
+            raise ValueError("Either service account credentials or OAuth tokens are required")
     
     def authenticate(self):
-        """Authenticate with Google Drive using service account credentials"""
+        """Authenticate with Google Drive using either service account or OAuth tokens"""
         try:
-            self.credentials = service_account.Credentials.from_service_account_info(
-                self.service_account_info,
-                scopes=self.SCOPES
-            )
+            if self.oauth_tokens:
+                self.credentials = Credentials(
+                    token=self.oauth_tokens.get('access_token'),
+                    refresh_token=self.oauth_tokens.get('refresh_token'),
+                    token_uri="https://oauth2.googleapis.com/token",
+                    client_id=os.getenv('GOOGLE_CLIENT_ID'),
+                    client_secret=os.getenv('GOOGLE_CLIENT_SECRET'),
+                    scopes=self.SCOPES
+                )
+            else:
+                self.credentials = service_account.Credentials.from_service_account_info(
+                    self.credentials_info,
+                    scopes=self.SCOPES
+                )
+            
             self.service = build('drive', 'v3', credentials=self.credentials)
         except Exception as e:
             raise Exception(f"Error authenticating with Google Drive: {str(e)}")
