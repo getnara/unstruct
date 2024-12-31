@@ -121,15 +121,21 @@ class Asset(NBaseWithOwnerModel):
             if not os.path.exists(local_path):
                 os.makedirs(os.path.dirname(local_path), exist_ok=True)
                 try:
-                    # First find the actual file in S3
-                    filename = os.path.basename(self.url)
-                    logger.error(f"[DEBUG] Looking for file: {filename}")
+                    # First try to get the key directly from the URL
+                    url_parts = self.url.split(settings.AWS_STORAGE_BUCKET_NAME + '.s3.' + settings.AWS_S3_REGION + '.amazonaws.com/')
+                    key = None
                     
-                    key = self._find_file_in_s3(filename)
-                    if not key:
-                        raise Exception(f"File {filename} not found in S3 bucket")
-                    
-                    logger.error(f"[DEBUG] Found file with key: {key}")
+                    if len(url_parts) == 2:
+                        key = url_parts[1]
+                        logger.info(f"Found key from URL: {key}")
+                    else:
+                        # If URL parsing fails, search for the file in S3
+                        filename = os.path.basename(self.url)
+                        logger.info(f"Looking for file: {filename}")
+                        key = self._find_file_in_s3(filename)
+                        if not key:
+                            raise Exception(f"File {filename} not found in S3 bucket")
+                        logger.info(f"Found file with key: {key}")
                     
                     # Use S3 client directly
                     s3 = boto3.client(
@@ -137,11 +143,19 @@ class Asset(NBaseWithOwnerModel):
                         region_name=settings.AWS_S3_REGION,
                     )
                     
-                    s3.download_file(settings.AWS_STORAGE_BUCKET_NAME, key, local_path)
-                    logger.error(f"[DEBUG] File downloaded successfully to {local_path}")
+                    try:
+                        s3.download_file(settings.AWS_STORAGE_BUCKET_NAME, key, local_path)
+                        logger.info(f"File downloaded successfully to {local_path}")
+                    except s3.exceptions.NoSuchKey:
+                        # If the direct key fails, try with the URL-decoded version
+                        from urllib.parse import unquote
+                        decoded_key = unquote(key)
+                        s3.download_file(settings.AWS_STORAGE_BUCKET_NAME, decoded_key, local_path)
+                        logger.info(f"File downloaded successfully using decoded key: {decoded_key}")
+                    
                 except Exception as e:
-                    logger.error(f"[DEBUG] Error downloading file from S3: {str(e)}")
-                    logger.error(f"[DEBUG] Error type: {type(e)}")
+                    logger.error(f"Error downloading file from S3: {str(e)}")
+                    logger.error(f"Error type: {type(e)}")
                     raise
                     
             return local_path
