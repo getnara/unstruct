@@ -102,12 +102,12 @@ Key files:
 
 5. Run migrations:
    ```
-   python manage.py migrate
+   python3.11 manage.py migrate
    ```
 
 6. Start the development server:
    ```
-   python manage.py runserver
+   python3.11 manage.py runserver
    ```
 
 Note: This project requires Python 3.11. Make sure you have it installed before proceeding with the setup.
