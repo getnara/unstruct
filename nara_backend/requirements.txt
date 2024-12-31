@@ -70,4 +70,3 @@ pydantic-settings==2.5.2
 # Development Tools
 python-dotenv==1.0.1
 pre-commit==3.8.0
-drf-spectacular==0.28.0
