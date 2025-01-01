@@ -6,6 +6,7 @@ django-environ==0.11.2
 django-allauth==64.2.1
 dj-rest-auth==6.0.0
 djangorestframework-simplejwt==5.3.1
+drf-spectacular==0.27.1
 gunicorn==21.2.0
 
 # AI and ML Dependencies
@@ -26,9 +27,8 @@ ftfy==6.1.1
 regex==2023.10.3
 
 # ML Framework
---find-links https://download.pytorch.org/whl/torch_stable.html
-torch==2.2.1+cpu
-torchvision==0.17.1+cpu
+torch>=2.2.0
+torchvision>=0.17.0
 tensorboard==2.15.1
 
 # Data Processing
