@@ -34,33 +34,45 @@ class TaskViewSet(OrganizationMixin, NBaselViewSet):
         return super().get_queryset().filter(organization=self.get_organization())
 
     def list(self, request, *args, **kwargs):
+        timings = []
+        
         with ViewTimingContextManager("query_tasks") as timing:
             queryset = self.get_queryset()
+            if hasattr(timing, 'duration') and timing.duration is not None:
+                timings.append(f"query_tasks;dur={timing.duration:.2f};desc='Query Tasks'")
+            else:
+                timings.append("query_tasks;dur=0;desc='Query Tasks'")
         
-        with ViewTimingContextManager("serialize_tasks") as serialize_timing:
+        with ViewTimingContextManager("serialize_tasks") as timing:
             serializer = self.get_serializer(queryset, many=True)
-            response = Response(serializer.data)
+            if hasattr(timing, 'duration') and timing.duration is not None:
+                timings.append(f"serialize_tasks;dur={timing.duration:.2f};desc='Serialize Tasks'")
+            else:
+                timings.append("serialize_tasks;dur=0;desc='Serialize Tasks'")
         
-        # Add timing headers
-        response["Server-Timing"] = (
-            f"query_tasks;dur={timing.duration:.2f};desc='Query Tasks',"
-            f"serialize;dur={serialize_timing.duration:.2f};desc='Serialize Tasks'"
-        )
+        response = Response(serializer.data)
+        response["Server-Timing"] = ", ".join(timings)
         return response
 
     def retrieve(self, request, *args, **kwargs):
+        timings = []
+        
         with ViewTimingContextManager("query_task") as timing:
             instance = self.get_object()
+            if hasattr(timing, 'duration') and timing.duration is not None:
+                timings.append(f"query_task;dur={timing.duration:.2f};desc='Query Task'")
+            else:
+                timings.append("query_task;dur=0;desc='Query Task'")
         
-        with ViewTimingContextManager("serialize_task") as serialize_timing:
+        with ViewTimingContextManager("serialize_task") as timing:
             serializer = self.get_serializer(instance)
-            response = Response(serializer.data)
+            if hasattr(timing, 'duration') and timing.duration is not None:
+                timings.append(f"serialize_task;dur={timing.duration:.2f};desc='Serialize Task'")
+            else:
+                timings.append("serialize_task;dur=0;desc='Serialize Task'")
         
-        # Add timing headers
-        response["Server-Timing"] = (
-            f"query_task;dur={timing.duration:.2f};desc='Query Task',"
-            f"serialize;dur={serialize_timing.duration:.2f};desc='Serialize Task'"
-        )
+        response = Response(serializer.data)
+        response["Server-Timing"] = ", ".join(timings)
         return response
 
     @action(detail=True, methods=["post"], url_path="process")
@@ -71,7 +83,10 @@ class TaskViewSet(OrganizationMixin, NBaselViewSet):
             with ViewTimingContextManager("get_task") as timing:
                 task = self.get_object()
                 organization = task.organization
-                timings.append(f"get_task;dur={timing.duration:.2f};desc='Get Task'")
+                if hasattr(timing, 'duration') and timing.duration is not None:
+                    timings.append(f"get_task;dur={timing.duration:.2f};desc='Get Task'")
+                else:
+                    timings.append("get_task;dur=0;desc='Get Task'")
             
             with ViewTimingContextManager("get_assets") as timing:
                 assets = task.assets.all()
@@ -80,7 +95,10 @@ class TaskViewSet(OrganizationMixin, NBaselViewSet):
                         {"error": "No assets found for this task"},
                         status=status.HTTP_400_BAD_REQUEST
                     )
-                timings.append(f"get_assets;dur={timing.duration:.2f};desc='Get Assets'")
+                if hasattr(timing, 'duration') and timing.duration is not None:
+                    timings.append(f"get_assets;dur={timing.duration:.2f};desc='Get Assets'")
+                else:
+                    timings.append("get_assets;dur=0;desc='Get Assets'")
             
             with ViewTimingContextManager("process_assets") as timing:
                 for asset in assets:
@@ -96,7 +114,10 @@ class TaskViewSet(OrganizationMixin, NBaselViewSet):
                     elif asset.file_type == ASSET_FILE_TYPE.MP3:
                         organization.can_process_audio(size_in_gb)
                         organization.add_audio_usage(size_in_gb)
-                timings.append(f"process_assets;dur={timing.duration:.2f};desc='Process Assets'")
+                if hasattr(timing, 'duration') and timing.duration is not None:
+                    timings.append(f"process_assets;dur={timing.duration:.2f};desc='Process Assets'")
+                else:
+                    timings.append("process_assets;dur=0;desc='Process Assets'")
             
             with ViewTimingContextManager("task_processing") as timing:
                 task.status = "RUNNING"
@@ -108,7 +129,10 @@ class TaskViewSet(OrganizationMixin, NBaselViewSet):
                 task.process_results = structured_output
                 task.status = "FINISHED"
                 task.save()
-                timings.append(f"task_processing;dur={timing.duration:.2f};desc='Task Processing'")
+                if hasattr(timing, 'duration') and timing.duration is not None:
+                    timings.append(f"task_processing;dur={timing.duration:.2f};desc='Task Processing'")
+                else:
+                    timings.append("task_processing;dur=0;desc='Task Processing'")
             
             response = Response(structured_output, status=status.HTTP_200_OK)
             response["Server-Timing"] = ", ".join(timings)

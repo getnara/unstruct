@@ -19,13 +19,18 @@ class ProjectViewSet(OrganizationMixin, NBaselViewSet):
         
         with ViewTimingContextManager("query_projects") as timing:
             queryset = self.get_queryset()
-            # Prefetch related data to optimize performance
             queryset = queryset.prefetch_related('collaborators', 'assets', 'tasks')
-            timings.append(f"query_projects;dur={timing.duration:.2f};desc='Query Projects'")
+            if hasattr(timing, 'duration') and timing.duration is not None:
+                timings.append(f"query_projects;dur={timing.duration:.2f};desc='Query Projects'")
+            else:
+                timings.append("query_projects;dur=0;desc='Query Projects'")
         
         with ViewTimingContextManager("serialize_projects") as timing:
             serializer = self.get_serializer(queryset, many=True)
-            timings.append(f"serialize_projects;dur={timing.duration:.2f};desc='Serialize Projects'")
+            if hasattr(timing, 'duration') and timing.duration is not None:
+                timings.append(f"serialize_projects;dur={timing.duration:.2f};desc='Serialize Projects'")
+            else:
+                timings.append("serialize_projects;dur=0;desc='Serialize Projects'")
         
         response = Response(serializer.data)
         response["Server-Timing"] = ", ".join(timings)
@@ -36,26 +41,33 @@ class ProjectViewSet(OrganizationMixin, NBaselViewSet):
         
         with ViewTimingContextManager("query_project") as timing:
             instance = self.get_object()
-            # Prefetch related data
             instance = self.get_queryset().prefetch_related(
                 'collaborators',
                 'assets',
                 'tasks'
             ).get(id=instance.id)
-            timings.append(f"query_project;dur={timing.duration:.2f};desc='Query Project'")
+            if hasattr(timing, 'duration') and timing.duration is not None:
+                timings.append(f"query_project;dur={timing.duration:.2f};desc='Query Project'")
+            else:
+                timings.append("query_project;dur=0;desc='Query Project'")
         
         with ViewTimingContextManager("serialize_project") as timing:
             serializer = self.get_serializer(instance)
-            timings.append(f"serialize_project;dur={timing.duration:.2f};desc='Serialize Project'")
+            if hasattr(timing, 'duration') and timing.duration is not None:
+                timings.append(f"serialize_project;dur={timing.duration:.2f};desc='Serialize Project'")
+            else:
+                timings.append("serialize_project;dur=0;desc='Serialize Project'")
         
         with ViewTimingContextManager("count_related") as timing:
-            # Get counts for related objects
             related_counts = {
                 'collaborators_count': instance.collaborators.count(),
                 'assets_count': instance.assets.count(),
                 'tasks_count': instance.tasks.count(),
             }
-            timings.append(f"count_related;dur={timing.duration:.2f};desc='Count Related Objects'")
+            if hasattr(timing, 'duration') and timing.duration is not None:
+                timings.append(f"count_related;dur={timing.duration:.2f};desc='Count Related Objects'")
+            else:
+                timings.append("count_related;dur=0;desc='Count Related Objects'")
         
         response_data = {
             **serializer.data,
