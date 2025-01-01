@@ -37,6 +37,8 @@ pandas==2.2.0
 scipy==1.14.1
 scikit-learn==1.4.2
 nltk==3.9.1
+lancedb==0.6.3
+chromadb==0.4.24
 
 # File Processing
 Pillow==10.4.0

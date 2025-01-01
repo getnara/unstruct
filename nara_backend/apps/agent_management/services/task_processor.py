@@ -47,10 +47,15 @@ class TaskProcessor:
         
         # Write headers (column names)
         headers = list(columns.keys())
+        if not headers:  # If no data, return empty CSV with a message
+            writer.writerow(['message'])
+            writer.writerow(['No results available'])
+            return output.getvalue()
+            
         writer.writerow(headers)
         
         # Find the maximum length of any column
-        max_length = max(len(values) for values in columns.values())
+        max_length = max((len(values) for values in columns.values()), default=0)
         
         # Write values row by row
         for i in range(max_length):
@@ -110,7 +115,7 @@ class TaskProcessor:
                 'Bucket': settings.AWS_STORAGE_BUCKET_NAME,
                 'Key': csv_key
             },
-            ExpiresIn=3600  # URL expires in 1 hour
+            ExpiresIn=604800  # URL expires in 7 days (7 * 24 * 60 * 60 seconds)
         )
 
         # Update task with results URL
