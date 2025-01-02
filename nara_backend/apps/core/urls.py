@@ -3,10 +3,12 @@ from rest_framework import routers
 
 from apps.core.views import (
     ActionViewSet, AssetViewSet, ProjectViewSet, TaskViewSet, UserViewSet,
-    GoogleDriveFilesView, GoogleDriveAuthView, GoogleDriveCallbackView, OrganizationViewSet
+    GoogleDriveFilesView, GoogleDriveAuthView, GoogleDriveCallbackView, OrganizationViewSet,
+    HealthCheckView
 )
 
 urlpatterns = [
+    path('health/', HealthCheckView.as_view(), name='health_check'),
     path('google-drive/files/', GoogleDriveFilesView.as_view(), name='google_drive_files'),
     path('google-drive/auth/', GoogleDriveAuthView.as_view(), name='google_drive_auth'),
     path('google-drive/callback/', GoogleDriveCallbackView.as_view(), name='google_drive_callback'),

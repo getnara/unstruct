@@ -6,10 +6,6 @@ RUN apt-get update -qq && apt-get install -y -qq \
     rm -rf /var/cache/apt/*
 
 ENV PYTHONUNBUFFERED 1
-
-# Create app directory
-RUN mkdir -p /app/nara_backend
-
 WORKDIR /app/nara_backend
 
 # Copy everything to the working directory

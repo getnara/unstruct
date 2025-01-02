@@ -173,11 +173,13 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-POSTGRES_USER = env("POSTGRES_USER")
-POSTGRES_NAME = env("POSTGRES_NAME")
-POSTGRES_PASSWORD = env("POSTGRES_PASSWORD")
-POSTGRES_HOST = env("POSTGRES_HOST")
-POSTGRES_PORT = env("POSTGRES_PORT")
+# PostgreSQL configuration (not used - using SQLite instead)
+# POSTGRES_USER = env("POSTGRES_USER")
+# POSTGRES_NAME = env("POSTGRES_NAME")
+# POSTGRES_PASSWORD = env("POSTGRES_PASSWORD")
+# POSTGRES_HOST = env("POSTGRES_HOST")
+# POSTGRES_PORT = env("POSTGRES_PORT")
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",

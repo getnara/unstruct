@@ -1,14 +1,17 @@
 {
     "family": "nara-backend",
     "networkMode": "bridge", 
-    "cpu": "1024",
-    "memory": "2048",
+    "cpu": "2048",
+    "memory": "8192",
     "executionRoleArn": "arn:aws:iam::897722672231:role/ecsTaskExecutionRole",
     "taskRoleArn": "arn:aws:iam::897722672231:role/ecsTaskRole",
     "containerDefinitions": [
         {
             "name": "nara-backend",
             "image": "897722672231.dkr.ecr.us-east-2.amazonaws.com/nara-backend:latest",
+            "cpu": 2048,
+            "memory": 8192,
+            "memoryReservation": 4096,
             "essential": true,
             "environment": [
                 {
@@ -16,48 +19,44 @@
                     "value": "config.settings.production"
                 },
                 {
-                    "name": "DJANGO_ENV",
-                    "value": "production"
-                },
-                {
-                    "name": "DEBUG",
-                    "value": "False"
-                },
-                {
-                    "name": "SECRET_KEY",
+                    "name": "DJANGO_SECRET_KEY",
                     "value": "django-insecure-jkz%ahq_oqyhm-t@)t)lkov8&u+glu+h1(rhmc(6p%3^ieu@34"
                 },
                 {
-                    "name": "API_HOST",
-                    "value": "api.getnara.ai"
+                    "name": "DJANGO_ALLOWED_HOSTS",
+                    "value": "*"
                 },
                 {
-                    "name": "API_PORT",
-                    "value": "443"
+                    "name": "DJANGO_CORS_ALLOWED_ORIGINS",
+                    "value": "https://app.getnara.ai,https://getnara.ai"
                 },
                 {
-                    "name": "API_PROTOCOL",
-                    "value": "https"
+                    "name": "DJANGO_CSRF_TRUSTED_ORIGINS",
+                    "value": "https://app.getnara.ai,https://getnara.ai"
                 },
                 {
-                    "name": "ALLOWED_HOSTS",
-                    "value": "api.getnara.ai,getnara.ai,www.getnara.ai"
+                    "name": "DATABASE_URL",
+                    "value": "sqlite:////app/nara_backend/db.sqlite3"
                 },
                 {
-                    "name": "CORS_ALLOWED_ORIGINS",
-                    "value": "https://getnara.ai,https://www.getnara.ai,http://localhost:3000"
+                    "name": "USER_POOL_ID",
+                    "value": "us-east-2_EPatQHp7j"
                 },
                 {
-                    "name": "CORS_ALLOW_CREDENTIALS",
-                    "value": "True"
+                    "name": "AWS_REGION",
+                    "value": "us-east-2"
                 },
                 {
-                    "name": "CORS_ALLOW_METHODS",
-                    "value": "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+                    "name": "USER_POOL_CLIENT_ID",
+                    "value": "1g4o8ut88sr5tdp2677mne1if8"
                 },
                 {
-                    "name": "CORS_ALLOW_HEADERS",
-                    "value": "accept,accept-encoding,authorization,content-type,dnt,origin,user-agent,x-csrftoken,x-requested-with"
+                    "name": "STRIPE_SECRET_KEY",
+                    "value": "sk_test_xgs7c622Jl8F8DZl0x8Vcyty"
+                },
+                {
+                    "name": "STRIPE_PUBLISHABLE_KEY",
+                    "value": "pk_test_KgtJv8bIDZwVxXKjcKbybnmK"
                 },
                 {
                     "name": "GOOGLE_CLIENT_ID",
@@ -66,22 +65,6 @@
                 {
                     "name": "GOOGLE_CLIENT_SECRET",
                     "value": "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"
-                },
-                {
-                    "name": "GOOGLE_OAUTH_REDIRECT_URI",
-                    "value": "https://api.getnara.ai/core/google-drive/callback/"
-                },
-                {
-                    "name": "GOOGLE_OAUTH_SCOPES",
-                    "value": "https://www.googleapis.com/auth/drive.readonly"
-                },
-                {
-                    "name": "DROPBOX_CLIENT_ID",
-                    "value": "ybpzu039fxuepzs"
-                },
-                {
-                    "name": "DROPBOX_CLIENT_SECRET",
-                    "value": "b97bkojewuose9h"
                 },
                 {
                     "name": "OPENAI_API_KEY",
@@ -94,12 +77,91 @@
                 {
                     "name": "DEEPGRAM_API_KEY",
                     "value": "f76b899174dbf74b96f0553169feb47d58b601ac"
+                },
+                {
+                    "name": "FREE_PLAN_MAX_ORGS",
+                    "value": "1"
+                },
+                {
+                    "name": "FREE_PLAN_MAX_MEMBERS",
+                    "value": "5"
+                },
+                {
+                    "name": "PRO_PLAN_MAX_ORGS",
+                    "value": "10"
+                },
+                {
+                    "name": "PRO_PLAN_MAX_MEMBERS",
+                    "value": "200"
+                },
+                {
+                    "name": "ENTERPRISE_PLAN_MAX_ORGS",
+                    "value": "100"
+                },
+                {
+                    "name": "ENTERPRISE_PLAN_MAX_MEMBERS",
+                    "value": "1000"
+                },
+                {
+                    "name": "FREE_PLAN_MAX_PDFS",
+                    "value": "100"
+                },
+                {
+                    "name": "FREE_PLAN_MAX_VIDEO_GB",
+                    "value": "1"
+                },
+                {
+                    "name": "FREE_PLAN_MAX_AUDIO_GB",
+                    "value": "1"
+                },
+                {
+                    "name": "PRO_PLAN_MAX_PDFS",
+                    "value": "500"
+                },
+                {
+                    "name": "PRO_PLAN_MAX_VIDEO_GB",
+                    "value": "5"
+                },
+                {
+                    "name": "PRO_PLAN_MAX_AUDIO_GB",
+                    "value": "5"
+                },
+                {
+                    "name": "ENTERPRISE_PLAN_MAX_PDFS",
+                    "value": "1000"
+                },
+                {
+                    "name": "ENTERPRISE_PLAN_MAX_VIDEO_GB",
+                    "value": "100"
+                },
+                {
+                    "name": "ENTERPRISE_PLAN_MAX_AUDIO_GB",
+                    "value": "100"
+                },
+                {
+                    "name": "FREE_PLAN_NAME",
+                    "value": "Free"
+                },
+                {
+                    "name": "PRO_PLAN_NAME",
+                    "value": "Pro"
+                },
+                {
+                    "name": "ENTERPRISE_PLAN_NAME",
+                    "value": "Enterprise"
+                }
+            ],
+            "mountPoints": [
+                {
+                    "sourceVolume": "sqlite-data",
+                    "containerPath": "/app/nara_backend",
+                    "readOnly": false
                 }
             ],
             "portMappings": [
                 {
                     "containerPort": 8000,
-                    "hostPort": 0, 
+                    "hostPort": 8000,
                     "protocol": "tcp"
                 }
             ],
@@ -112,5 +174,16 @@
                 }
             }
         }
+    ],
+    "volumes": [
+        {
+            "name": "sqlite-data",
+            "host": {
+                "sourcePath": "/ecs/sqlite-data"
+            }
+        }
+    ],
+    "requiresCompatibilities": [
+        "EC2"
     ]
-}
+} 
