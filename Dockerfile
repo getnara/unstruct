@@ -6,19 +6,18 @@ RUN apt-get update -qq && apt-get install -y -qq \
     rm -rf /var/cache/apt/*
 
 ENV PYTHONUNBUFFERED 1
-WORKDIR /app
+WORKDIR /app/nara_backend
 
-# Copy the Django project
-COPY nara_backend /app/nara_backend
-COPY requirements.txt /app/
+# Copy everything to the working directory
+COPY . .
 
 # Install dependencies
 RUN pip install gunicorn
 RUN pip install -r requirements.txt
 
-# Make scripts executable
-RUN chmod +x /app/nara_backend/scripts/*.sh
+# Make scripts executable (update path to match actual location)
+RUN chmod +x scripts/*.sh
 
 EXPOSE 8000
-WORKDIR /app/nara_backend
-ENTRYPOINT ["scripts/run_server.sh"] 
+# Update entrypoint to use correct script path
+ENTRYPOINT ["scripts/run_server.sh"]
