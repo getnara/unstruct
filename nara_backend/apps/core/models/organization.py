@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from datetime import datetime
 
-from apps.common.models import NBaseModel
+from apps.common.models.base_model import NBaseModel, NBaseModelManager
 from apps.core.services.stripe_service import StripeService
 
 
@@ -253,6 +253,9 @@ class OrganizationMember(NBaseModel):
         ('admin', 'Admin'),
         ('member', 'Member'),
     )
+
+    # Use the custom manager that automatically filters out soft-deleted records
+    objects = NBaseModelManager()
 
     organization = models.ForeignKey(
         Organization,

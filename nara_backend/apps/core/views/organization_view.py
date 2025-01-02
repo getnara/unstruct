@@ -153,7 +153,7 @@ class OrganizationViewSet(NBaselViewSet):
     @action(detail=True, methods=['get'])
     def members(self, request, pk=None):
         organization = self.get_object()
-        members = OrganizationMember.objects.filter(organization=organization)
+        members = OrganizationMember.objects.filter(organization=organization)  # Manager handles soft delete filter
         serializer = OrganizationMemberSerializer(members, many=True)
         return Response(serializer.data)
 
@@ -162,6 +162,9 @@ class OrganizationViewSet(NBaselViewSet):
         """Remove a member from the organization. Only admins can perform this action."""
         try:
             organization = self.get_object()
+            
+            # Add explicit permission check
+            self.check_object_permissions(request, organization)
             
             # Get the member and ensure it belongs to this organization
             member = get_object_or_404(OrganizationMember, id=member_id, organization=organization)
@@ -173,8 +176,8 @@ class OrganizationViewSet(NBaselViewSet):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
-            # Delete the member
-            member.delete()
+            # Use soft delete with user tracking
+            member.delete(user=request.user)
             return Response(status=status.HTTP_204_NO_CONTENT)
             
         except Exception as e:
