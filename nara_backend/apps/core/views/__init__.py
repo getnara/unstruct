@@ -7,7 +7,7 @@ from .google_drive_view import GoogleDriveFilesView, GoogleDriveAuthView, Google
 from .project_view import ProjectViewSet
 from .task_view import TaskViewSet
 from .user_view import UserViewSet
-from .views import ApiRoot
+from .views import ApiRoot, HealthCheckView
 from .organization_view import OrganizationViewSet
 
 __all__ = [
@@ -22,4 +22,5 @@ __all__ = [
     "GoogleDriveFilesView",
     "GoogleDriveAuthView",
     "GoogleDriveCallbackView",
+    "HealthCheckView",
 ]
