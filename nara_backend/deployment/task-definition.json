@@ -19,7 +19,7 @@
                     "value": "config.settings.production"
                 },
                 {
-                    "name": "DJANGO_SECRET_KEY",
+                    "name": "SECRET_KEY",
                     "value": "django-insecure-jkz%ahq_oqyhm-t@)t)lkov8&u+glu+h1(rhmc(6p%3^ieu@34"
                 },
                 {
