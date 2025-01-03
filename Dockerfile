@@ -21,6 +21,6 @@ EXPOSE 8000
 WORKDIR /app/nara_backend
 
 # Add health check
-HEALTHCHECK \n    --interval=30s \n    --timeout=10s \n    --start-period=30s \n    --retries=3 \n    CMD curl -f http://localhost:8000/health || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 CMD curl -f http://localhost:8000/health || exit 1
 
 ENTRYPOINT ["/bin/bash", "/app/nara_backend/nara_backend/scripts/run_server.sh"]
