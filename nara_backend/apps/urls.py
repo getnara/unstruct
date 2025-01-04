@@ -18,7 +18,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-from apps.core.views import ApiRoot, CognitoLoginView
+from apps.core.views import ApiRoot, CognitoLoginView, HealthCheckView
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 
@@ -30,7 +30,8 @@ urlpatterns = [
     path("agent_management/", include("apps.agent_management.urls")),
     path("dj-rest-auth/cognito/", CognitoLoginView.as_view(), name="cognito_login"),
     path("", ApiRoot.as_view(), name=ApiRoot.name),
-     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path("health/", HealthCheckView.as_view(), name="health_check"),
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     # Optional UI:
     path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
