@@ -36,7 +36,7 @@
                 },
                 {
                     "name": "DATABASE_URL",
-                    "value": "sqlite:////app/nara_backend/db/db.sqlite3"
+                    "value": "sqlite:////app/nara_backend/db.sqlite3"
                 },
                 {
                     "name": "USER_POOL_ID",
