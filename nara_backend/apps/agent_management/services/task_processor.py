@@ -19,6 +19,7 @@ class TaskProcessor:
         self.preview_limit = 5  # Number of results to show in preview
         self.s3_client = boto3.client(
             's3',
+            region_name='us-east-2',
             config=Config(signature_version='s3v4')
         )
 

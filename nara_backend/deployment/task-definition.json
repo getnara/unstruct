@@ -8,7 +8,7 @@
     "containerDefinitions": [
         {
             "name": "nara-backend",
-            "image": "897722672231.dkr.ecr.us-east-2.amazonaws.com/nara-backend:sqlite-fix",
+            "image": "897722672231.dkr.ecr.us-east-2.amazonaws.com/nara-backend:latest",
             "cpu": 2048,
             "memory": 8192,
             "memoryReservation": 4096,
