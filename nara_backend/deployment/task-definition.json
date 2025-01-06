@@ -1,6 +1,6 @@
 {
     "family": "nara-backend",
-    "networkMode": "bridge", 
+    "networkMode": "bridge",
     "cpu": "2048",
     "memory": "8192",
     "executionRoleArn": "arn:aws:iam::897722672231:role/ecsTaskExecutionRole",
@@ -36,7 +36,7 @@
                 },
                 {
                     "name": "DATABASE_URL",
-                    "value": "sqlite:////app/nara_backend/db.sqlite3"
+                    "value": "sqlite:////data/db.sqlite3"
                 },
                 {
                     "name": "USER_POOL_ID",
@@ -45,6 +45,10 @@
                 {
                     "name": "AWS_REGION",
                     "value": "us-east-2"
+                },
+                {
+                    "name": "AWS_STORAGE_BUCKET_NAME",
+                    "value": "naradashboardf031fb61e2b342a7b2bbeabad07a2a46edc15-prod"
                 },
                 {
                     "name": "USER_POOL_CLIENT_ID",
@@ -154,7 +158,7 @@
             "mountPoints": [
                 {
                     "sourceVolume": "sqlite-data",
-                    "containerPath": "/app/nara_backend/db",
+                    "containerPath": "/data",
                     "readOnly": false
                 }
             ],
