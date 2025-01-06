@@ -153,6 +153,14 @@
                 {
                     "name": "ENTERPRISE_PLAN_NAME",
                     "value": "Enterprise"
+                },
+                {
+                    "name": "API_PROTOCOL",
+                    "value": "https"
+                },
+                {
+                    "name": "API_HOST",
+                    "value": "zwxentfg2f.execute-api.us-east-2.amazonaws.com/prod"
                 }
             ],
             "mountPoints": [
