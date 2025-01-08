@@ -1,0 +1,192 @@
+{
+  "containerDefinitions": [
+    {
+      "name": "nara-backend",
+      "image": "897722672231.dkr.ecr.us-east-2.amazonaws.com/nara-backend:79a476e719bcdd9479dba87ffb6a0cb3c1a56853",
+      "cpu": 2048,
+      "memory": 8192,
+      "memoryReservation": 4096,
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "hostPort": 8000,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "FREE_PLAN_NAME",
+          "value": "Free"
+        },
+        {
+          "name": "GOOGLE_CLIENT_SECRET",
+          "value": "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"
+        },
+        {
+          "name": "ENTERPRISE_PLAN_MAX_ORGS",
+          "value": "100"
+        },
+        {
+          "name": "ENTERPRISE_PLAN_MAX_VIDEO_GB",
+          "value": "100"
+        },
+        {
+          "name": "STRIPE_SECRET_KEY",
+          "value": "sk_test_xgs7c622Jl8F8DZl0x8Vcyty"
+        },
+        {
+          "name": "ENTERPRISE_PLAN_MAX_MEMBERS",
+          "value": "1000"
+        },
+        {
+          "name": "SECRET_KEY",
+          "value": "django-insecure-jkz%ahq_oqyhm-t@)t)lkov8&u+glu+h1(rhmc(6p%3^ieu@34"
+        },
+        {
+          "name": "ENTERPRISE_PLAN_NAME",
+          "value": "Enterprise"
+        },
+        {
+          "name": "ENTERPRISE_PLAN_MAX_AUDIO_GB",
+          "value": "100"
+        },
+        {
+          "name": "USER_POOL_ID",
+          "value": "us-east-2_EPatQHp7j"
+        },
+        {
+          "name": "DJANGO_CSRF_TRUSTED_ORIGINS",
+          "value": "https://app.getnara.ai,https://getnara.ai"
+        },
+        {
+          "name": "FREE_PLAN_MAX_PDFS",
+          "value": "100"
+        },
+        {
+          "name": "PRO_PLAN_MAX_PDFS",
+          "value": "500"
+        },
+        {
+          "name": "DATABASE_URL",
+          "value": "sqlite:////app/nara_backend/db.sqlite3"
+        },
+        {
+          "name": "PRO_PLAN_MAX_ORGS",
+          "value": "10"
+        },
+        {
+          "name": "FREE_PLAN_MAX_AUDIO_GB",
+          "value": "1"
+        },
+        {
+          "name": "PRO_PLAN_MAX_AUDIO_GB",
+          "value": "5"
+        },
+        {
+          "name": "AWS_REGION",
+          "value": "us-east-2"
+        },
+        {
+          "name": "FREE_PLAN_MAX_ORGS",
+          "value": "1"
+        },
+        {
+          "name": "GOOGLE_CLIENT_ID",
+          "value": "577261951803-g0fk8m50ovmjll7guq713dj7pahcufuq.apps.googleusercontent.com"
+        },
+        {
+          "name": "DEEPGRAM_API_KEY",
+          "value": "f76b899174dbf74b96f0553169feb47d58b601ac"
+        },
+        {
+          "name": "FREE_PLAN_MAX_VIDEO_GB",
+          "value": "1"
+        },
+        {
+          "name": "FREE_PLAN_MAX_MEMBERS",
+          "value": "5"
+        },
+        {
+          "name": "LLAMA_CLOUD_API_KEY",
+          "value": "llx-5gCTMlOizD8osRGLIjPWt6ZnsMp937uStucgP1U7QAM3WP1d"
+        },
+        {
+          "name": "DJANGO_CORS_ALLOWED_ORIGINS",
+          "value": "https://app.getnara.ai,https://getnara.ai"
+        },
+        {
+          "name": "PRO_PLAN_MAX_MEMBERS",
+          "value": "200"
+        },
+        {
+          "name": "PRO_PLAN_MAX_VIDEO_GB",
+          "value": "5"
+        },
+        {
+          "name": "DJANGO_SETTINGS_MODULE",
+          "value": "config.settings.production"
+        },
+        {
+          "name": "DJANGO_ALLOWED_HOSTS",
+          "value": "*"
+        },
+        {
+          "name": "ENTERPRISE_PLAN_MAX_PDFS",
+          "value": "1000"
+        },
+        {
+          "name": "PRO_PLAN_NAME",
+          "value": "Pro"
+        },
+        {
+          "name": "OPENAI_API_KEY",
+          "value": "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"
+        },
+        {
+          "name": "USER_POOL_CLIENT_ID",
+          "value": "1g4o8ut88sr5tdp2677mne1if8"
+        },
+        {
+          "name": "STRIPE_PUBLISHABLE_KEY",
+          "value": "pk_test_KgtJv8bIDZwVxXKjcKbybnmK"
+        }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "sqlite-data",
+          "containerPath": "/app/nara_backend/db",
+          "readOnly": false
+        }
+      ],
+      "volumesFrom": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/nara-backend",
+          "awslogs-region": "us-east-2",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "systemControls": []
+    }
+  ],
+  "family": "nara-backend",
+  "taskRoleArn": "arn:aws:iam::897722672231:role/ecsTaskRole",
+  "executionRoleArn": "arn:aws:iam::897722672231:role/ecsTaskExecutionRole",
+  "networkMode": "bridge",
+  "volumes": [
+    {
+      "name": "sqlite-data",
+      "host": {
+        "sourcePath": "/ecs/sqlite-data"
+      }
+    }
+  ],
+  "placementConstraints": [],
+  "requiresCompatibilities": [
+    "EC2"
+  ],
+  "cpu": "2048",
+  "memory": "8192"
+}

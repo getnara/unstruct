@@ -17,6 +17,7 @@ from datetime import timedelta
 from pathlib import Path
 
 import environ
+import dj_database_url
 
 # Initialize environ
 env = environ.Env()
@@ -173,17 +174,15 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-# PostgreSQL configuration (not used - using SQLite instead)
-# POSTGRES_USER = env("POSTGRES_USER")
-# POSTGRES_NAME = env("POSTGRES_NAME")
-# POSTGRES_PASSWORD = env("POSTGRES_PASSWORD")
-# POSTGRES_HOST = env("POSTGRES_HOST")
-# POSTGRES_PORT = env("POSTGRES_PORT")
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env('DB_NAME', default='nara_prod'),
+        'USER': env('DB_USER', default='naraadmin'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST'),
+        'PORT': env('DB_PORT', default='5432'),
     }
 }
 

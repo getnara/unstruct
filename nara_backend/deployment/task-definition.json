@@ -36,7 +36,7 @@
                 },
                 {
                     "name": "DATABASE_URL",
-                    "value": "sqlite:////data/db.sqlite3"
+                    "value": "postgres://naraadmin:Nara2024!Secure@nara-prod.cbaoiyyw8szg.us-east-2.rds.amazonaws.com:5432/nara_prod"
                 },
                 {
                     "name": "USER_POOL_ID",
@@ -163,13 +163,6 @@
                     "value": "zwxentfg2f.execute-api.us-east-2.amazonaws.com/prod"
                 }
             ],
-            "mountPoints": [
-                {
-                    "sourceVolume": "sqlite-data",
-                    "containerPath": "/data",
-                    "readOnly": false
-                }
-            ],
             "portMappings": [
                 {
                     "containerPort": 8000,
@@ -184,14 +177,6 @@
                     "awslogs-region": "us-east-2",
                     "awslogs-stream-prefix": "ecs"
                 }
-            }
-        }
-    ],
-    "volumes": [
-        {
-            "name": "sqlite-data",
-            "host": {
-                "sourcePath": "/ecs/sqlite-data"
             }
         }
     ],

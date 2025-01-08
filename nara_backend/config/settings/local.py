@@ -1,6 +1,18 @@
 import os
 from .base import *  # noqa: F401 F403
 
+# Database Configuration for Local Development
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env('DB_NAME', default='nara_local'),
+        'USER': env('DB_USER', default='postgres'),
+        'PASSWORD': env('DB_PASSWORD', default='postgres'),
+        'HOST': env('DB_HOST', default='localhost'),
+        'PORT': env('DB_PORT', default='5432'),
+    }
+}
+
 # Force set the STRIPE_SECRET_KEY if not found
 if not os.getenv('STRIPE_SECRET_KEY'):
     os.environ['STRIPE_SECRET_KEY'] = 'sk_test_xgs7c622Jl8F8DZl0x8Vcyty'
