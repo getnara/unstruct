@@ -28,11 +28,11 @@
                 },
                 {
                     "name": "DJANGO_CORS_ALLOWED_ORIGINS",
-                    "value": "https://app.getnara.ai,https://getnara.ai"
+                    "value": "https://dashboard.getnara.ai,https://getnara.ai"
                 },
                 {
                     "name": "DJANGO_CSRF_TRUSTED_ORIGINS",
-                    "value": "https://app.getnara.ai,https://getnara.ai"
+                    "value": "https://dashboard.getnara.ai,https://getnara.ai"
                 },
                 {
                     "name": "DATABASE_URL",

@@ -111,7 +111,10 @@ if ! PGPASSWORD=$DB_PASSWORD psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -c '
     handle_error "Failed to connect to database. Please check your credentials."
 fi
 
-# Run migrations
+# Create and run migrations
+echo "Checking for model changes..."
+python3.11 manage.py makemigrations || handle_error "Failed to create migrations"
+
 echo "Running migrations..."
 python3.11 manage.py migrate || handle_error "Failed to run migrations"
 

@@ -119,9 +119,9 @@ class TaskProcessor:
             ExpiresIn=604800  # URL expires in 7 days (7 * 24 * 60 * 60 seconds)
         )
 
-        # Update task with results URL
+        # Update task with results URL and properly serialized preview results
         task.result_file_url = presigned_url
-        task.process_results = preview_results
+        task.process_results = json.dumps(preview_results)  # Properly serialize as JSON
         task.save()
 
         return {

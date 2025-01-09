@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.db.models import JSONField
 from django.utils import timezone
+import json
 
 from apps.common.models import NBaseWithOwnerModel
 
@@ -38,15 +39,15 @@ class Task(NBaseWithOwnerModel):
         default=list,
     )
     status = models.CharField(
-        max_length=20,
+        max_length=200,
         choices=TASK_RUNNING_STATUS.choices,
         default=TASK_RUNNING_STATUS.PENDING,
     )
     description = models.TextField(null=True, blank=True)
-    result_file_url = models.URLField(blank=True, null=True)
+    result_file_url = models.URLField(max_length=2000, blank=True, null=True)
     
     # Store process results
-    process_results = JSONField(default=list, blank=True)
+    process_results = models.TextField(default='[]', blank=True)
     total_files = models.IntegerField(default=0)
     processed_files = models.IntegerField(default=0)
     failed_files = models.IntegerField(default=0)
@@ -74,11 +75,14 @@ class Task(NBaseWithOwnerModel):
         if error:
             result['error'] = str(error)
             
-        if not self.process_results:
-            self.process_results = []
+        try:
+            current_results = json.loads(self.process_results)
+        except (json.JSONDecodeError, TypeError):
+            current_results = []
             
-        self.process_results.append(result)
-        
+        current_results.append(result)
+        self.process_results = json.dumps(current_results)
+            
         # Update counters
         self.processed_files += 1
         if status == 'error':
