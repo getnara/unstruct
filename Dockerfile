@@ -17,13 +17,12 @@ ENV CXX="g++"
 
 WORKDIR /app
 
-# Copy the Django project
+# Copy the Django project and requirements
 COPY nara_backend /app/nara_backend/
-COPY requirements.txt /app/
 
 # Install dependencies
 RUN pip install gunicorn
-RUN pip install -r /app/requirements.txt
+RUN pip install -r /app/nara_backend/requirements.txt
 
 # Make scripts executable
 RUN chmod +x /app/nara_backend/scripts/*.sh
