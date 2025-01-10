@@ -43,24 +43,49 @@ class SimpleAuthentication(BaseAuthentication):
             
             logger.debug(f"Token verified successfully. Claims: {claims}")
             
-            # Get email from token claims
+            # Get email and sub (user ID) from token claims
             email = claims.get('email')
+            cognito_user_id = claims.get('sub')
+            
             if not email:
                 logger.error("No email found in token claims")
                 raise AuthenticationFailed('No email found in token')
             
+            if not cognito_user_id:
+                logger.error("No user ID found in token claims")
+                raise AuthenticationFailed('No user ID found in token')
+
             logger.debug(f"Found email in claims: {email}")
+            logger.debug(f"Found user ID in claims: {cognito_user_id}")
             
-            # Get or create user based on email
-            user, created = User.objects.get_or_create(
-                email=email,
-                defaults={
-                    'username': email,
-                    'is_active': True
-                }
-            )
+            # Try to get user by Cognito user ID first
+            user = User.objects.filter(id=cognito_user_id).first()
             
-            logger.debug(f"User {'created' if created else 'retrieved'} with email: {email}")
+            if user:
+                # User found by ID, update email if it changed
+                if user.email != email:
+                    logger.debug(f"Updating email for user {cognito_user_id} from {user.email} to {email}")
+                    user.email = email
+                    user.save()
+            else:
+                # Try to find user by email
+                user = User.objects.filter(email=email).first()
+                if user:
+                    # User found by email but has different ID, update their ID
+                    logger.debug(f"Updating user ID from {user.id} to {cognito_user_id}")
+                    User.objects.filter(id=user.id).update(id=cognito_user_id)
+                    user = User.objects.get(id=cognito_user_id)
+                else:
+                    # Create new user with Cognito user ID
+                    logger.debug(f"Creating new user with ID {cognito_user_id} and email {email}")
+                    user = User.objects.create(
+                        id=cognito_user_id,
+                        email=email,
+                        username=email,
+                        is_active=True
+                    )
+            
+            logger.debug(f"User authenticated with ID: {user.id} and email: {user.email}")
             
             return (user, None)
 
