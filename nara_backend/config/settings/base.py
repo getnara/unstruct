@@ -380,9 +380,13 @@ def get_api_base_url():
     protocol = env("API_PROTOCOL", default="http")
     host = env("API_HOST", default="localhost")
     port = env("API_PORT", default="8000")
+    stage = env("API_STAGE", default="")
     
     if env("DJANGO_ENV", default="development") == 'production':
-        return f"{protocol}://{host}"
+        base_url = f"{protocol}://{host}"
+        if stage:
+            base_url = f"{base_url}/{stage}"
+        return base_url
     return f"{protocol}://{host}:{port}"
 
 # Add this with your other Google settings
