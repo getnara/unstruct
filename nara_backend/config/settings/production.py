@@ -1,5 +1,8 @@
 from .base import *  # noqa: F401 F403
 import os
+import environ
+
+env = environ.Env()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
@@ -55,13 +58,19 @@ AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
 AWS_S3_REGION = os.environ.get('AWS_S3_REGION', 'us-east-2')
 
 # Database Configuration
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'nara_prod',
-        'USER': 'naraadmin',
-        'PASSWORD': 'Nara2024!Secure',
-        'HOST': 'nara-prod.cbaoiyyw8szg.us-east-2.rds.amazonaws.com',
-        'PORT': '5432',
+if 'DATABASE_URL' in os.environ:
+    DATABASES = {
+        'default': env.db(),
     }
-}
+else:
+    # Fallback to individual environment variables
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('DB_NAME', default='nara_prod'),
+            'USER': env('DB_USER', default='naraadmin'),
+            'PASSWORD': env('DB_PASSWORD'),
+            'HOST': env('DB_HOST', default='nara-prod.cbaoiyyw8szg.us-east-2.rds.amazonaws.com'),
+            'PORT': env('DB_PORT', default='5432'),
+        }
+    }

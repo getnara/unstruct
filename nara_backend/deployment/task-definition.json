@@ -161,6 +161,26 @@
                 {
                     "name": "API_HOST",
                     "value": "zwxentfg2f.execute-api.us-east-2.amazonaws.com/prod"
+                },
+                {
+                    "name": "DB_PASSWORD",
+                    "value": "Nara2024!Secure"
+                },
+                {
+                    "name": "DB_HOST",
+                    "value": "nara-prod.cbaoiyyw8szg.us-east-2.rds.amazonaws.com"
+                },
+                {
+                    "name": "DB_NAME",
+                    "value": "nara_prod"
+                },
+                {
+                    "name": "DB_USER",
+                    "value": "naraadmin"
+                },
+                {
+                    "name": "DB_PORT",
+                    "value": "5432"
                 }
             ],
             "portMappings": [
