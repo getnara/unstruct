@@ -160,7 +160,15 @@
                 },
                 {
                     "name": "API_HOST",
-                    "value": "zwxentfg2f.execute-api.us-east-2.amazonaws.com/prod"
+                    "value": "zwxentfg2f.execute-api.us-east-2.amazonaws.com"
+                },
+                {
+                    "name": "API_STAGE",
+                    "value": "prod"
+                },
+                {
+                    "name": "DJANGO_ENV",
+                    "value": "production"
                 },
                 {
                     "name": "DB_PASSWORD",
