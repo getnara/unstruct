@@ -14,6 +14,14 @@ class ProjectViewSet(OrganizationMixin, NBaselViewSet):
     def get_queryset(self):
         return super().get_queryset().filter(organization=self.get_organization())
 
+    def perform_create(self, serializer):
+        # First call the parent's perform_create to set organization and created_by/updated_by
+        super().perform_create(serializer)
+        # Then update the instance to set the owner
+        instance = serializer.instance
+        instance.owner = self.request.user
+        instance.save()
+
     def list(self, request, *args, **kwargs):
         timings = []
         

@@ -25,6 +25,7 @@ deepgram-sdk==3.7.6
 open_clip_torch==2.20.0
 ftfy==6.1.1
 regex==2023.10.3
+lancedb==0.5.8
 
 # ML Framework
 torch>=2.2.0
