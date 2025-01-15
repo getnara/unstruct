@@ -66,8 +66,14 @@ class GoogleDriveFilesView(APIView):
             logger.info("=== Request Debug Information ===")
             logger.info(f"Request Method: {request.method}")
             logger.info(f"Request Path: {request.path}")
-            logger.info(f"Request Headers: {dict(request.headers)}")
-            logger.info(f"Request Body: {request.data}")
+            logger.info(f"Request Origin: {request.headers.get('origin', 'No origin')}")
+            logger.info(f"CORS Headers Present:")
+            logger.info(f"  Access-Control-Request-Method: {request.headers.get('access-control-request-method')}")
+            logger.info(f"  Access-Control-Request-Headers: {request.headers.get('access-control-request-headers')}")
+            
+            # Log all headers for debugging
+            all_headers = {k: v for k, v in request.headers.items()}
+            logger.info(f"All Request Headers: {all_headers}")
             
             # Get the Google token from Authorization header
             auth_header = request.headers.get('Authorization')
@@ -81,6 +87,7 @@ class GoogleDriveFilesView(APIView):
             logger.info(f"Authorization header present: {bool(auth_header)}")
             if google_token:
                 logger.info(f"Token length: {len(google_token)}")
+                logger.info(f"Token type: {auth_header.split(' ')[0] if auth_header else 'None'}")
                 logger.info(f"Token preview: {google_token[:10]}...")
             
             if not google_token:
@@ -368,7 +375,7 @@ class GoogleDriveCallbackView(APIView):
             </html>
         """
         response = HttpResponse(html_content)
-        response["Cross-Origin-Opener-Policy"] = "same-origin-allow-popups"
+        response["Cross-Origin-Opener-Policy"] = "unsafe-none"
         response["Cross-Origin-Embedder-Policy"] = "unsafe-none"
         response["Access-Control-Allow-Origin"] = frontend_origin
         response["Access-Control-Allow-Credentials"] = "true"
