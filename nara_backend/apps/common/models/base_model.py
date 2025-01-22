@@ -1,7 +1,6 @@
 import uuid
-
-from django.conf import settings
 from django.db import models
+from django.conf import settings
 from django.utils import timezone
 
 
@@ -11,6 +10,7 @@ class NBaseModelManager(models.Manager):
 
 
 class NBaseModel(models.Model):
+    """Base model with common fields and soft delete functionality"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     is_deleted = models.BooleanField(default=False)
     deleted_at = models.DateTimeField(null=True, blank=True)
@@ -35,6 +35,9 @@ class NBaseModel(models.Model):
         related_name="%(class)s_items"
     )
 
+    objects = NBaseModelManager()
+    all_objects = models.Manager()
+
     class Meta:
         abstract = True
 
@@ -57,11 +60,12 @@ class NBaseModel(models.Model):
 
 
 class NBaseWithOwnerModel(NBaseModel):
+    """Base model with owner field in addition to base fields"""
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
-        related_name="%(class)s_owner",
+        related_name="%(class)s_owner"
     )
 
     class Meta:

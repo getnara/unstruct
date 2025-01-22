@@ -6,6 +6,7 @@ from apps.core.views import (
     GoogleDriveFilesView, GoogleDriveAuthView, GoogleDriveCallbackView, OrganizationViewSet,
     HealthCheckView
 )
+from apps.core.views.transformation_template_view import TransformationTemplateViewSet
 
 urlpatterns = [
     path('health/', HealthCheckView.as_view(), name='health_check'),
@@ -21,5 +22,6 @@ router.register(ActionViewSet.name, ActionViewSet, basename=ActionViewSet.name)
 router.register(TaskViewSet.name, TaskViewSet, basename=TaskViewSet.name)
 router.register(UserViewSet.name, UserViewSet, basename=UserViewSet.name)
 router.register(OrganizationViewSet.name, OrganizationViewSet, basename=OrganizationViewSet.name)
+router.register(r'transformation-templates', TransformationTemplateViewSet, basename='transformation-templates')
 
 urlpatterns = urlpatterns + router.urls

@@ -17,7 +17,6 @@ from datetime import timedelta
 from pathlib import Path
 
 import environ
-import dj_database_url
 
 # Initialize environ
 env = environ.Env()
