@@ -16,6 +16,8 @@ class TaskProcessor:
     def __init__(self):
         self.model = settings.AI_MODEL  # e.g., "OpenAI"
         self.api_key = settings.OPENAI_API_KEY
+        if self.model.lower() == "gemini":
+            self.api_key = settings.GEMINI_API_KEY
         self.preview_limit = 5  # Number of results to show in preview
         self.s3_client = boto3.client(
             's3',
