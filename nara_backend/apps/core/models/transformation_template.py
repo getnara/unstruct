@@ -7,6 +7,14 @@ class TransformationTemplate(NBaseModel):
     description = models.TextField()
     template_type = models.CharField(max_length=100)
     image_url = models.URLField(null=True, blank=True)
+    organization = models.ForeignKey(
+        'core.Organization',
+        on_delete=models.CASCADE,
+        related_name='transformation_templates',
+        null=True,
+        blank=True
+    )
+    is_global = models.BooleanField(default=False)
     
     class Meta:
         db_table = 'transformation_template'
