@@ -8,16 +8,13 @@ from django.conf import settings
 from django.utils import timezone
 from botocore.config import Config
 
-from apps.core.models import Task
+from apps.core.models import Task, ASSET_FILE_TYPE
 from .agent_service_factory import AgentServiceFactory
 
 
 class TaskProcessor:
     def __init__(self):
         self.model = settings.AI_MODEL  # e.g., "OpenAI"
-        self.api_key = settings.OPENAI_API_KEY
-        if self.model.lower() == "gemini":
-            self.api_key = settings.GEMINI_API_KEY
         self.preview_limit = 5  # Number of results to show in preview
         self.s3_client = boto3.client(
             's3',
@@ -68,7 +65,19 @@ class TaskProcessor:
         return output.getvalue()
 
     def process(self, task: Task) -> Dict[str, any]:
-        agent_service = AgentServiceFactory.get_agent_service(self.model, self.api_key)
+        # Get the file type of the first asset in the task
+        file_type = task.assets.first().file_type if task.assets.exists() else None
+        
+        # Select appropriate API key based on file type
+        api_key = settings.GEMINI_API_KEY if file_type == ASSET_FILE_TYPE.PDF else settings.OPENAI_API_KEY
+        
+        # Get appropriate agent service based on model and file type
+        agent_service = AgentServiceFactory.get_agent_service(
+            model=self.model, 
+            api_key=api_key,
+            file_type=file_type
+        )
+        
         if not agent_service:
             raise ValueError(f"AI model '{self.model}' is not supported.")
 

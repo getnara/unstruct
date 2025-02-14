@@ -13,6 +13,7 @@ from apps.core.models import Action, Asset, Task, ASSET_FILE_TYPE
 from apps.core.models.action import ACTION_TYPE
 from .base_agent_service import BaseAgentService
 from .vector_store import VectorStore
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -105,8 +106,8 @@ class GeminiAgentService(BaseAgentService):
             raise ValueError("Gemini API key is not set in the environment variables.")
         
         genai.configure(api_key=api_key)
-        self.text_model = GenerativeModel('gemini-1.5-flash')
-        self.vision_model = GenerativeModel('gemini-1.5-flash')
+        self.text_model = GenerativeModel(os.getenv('GEMINI_MODEL', 'gemini-1.5-flash'))  # Model name should come from environment, with a default
+        self.vision_model = GenerativeModel(os.getenv('GEMINI_MODEL', 'gemini-1.5-flash'))  # Model name should come from environment, with a default
 
         # Initialize handlers
         self.handlers = {

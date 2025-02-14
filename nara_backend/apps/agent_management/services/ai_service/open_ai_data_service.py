@@ -17,6 +17,7 @@ from apps.core.models.action import ACTION_TYPE
 
 from .base_agent_service import BaseAgentService
 from .vector_store import VectorStore
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -241,7 +242,7 @@ class OpenAIAgentService(BaseAgentService):
         if not api_key:
             logger.error("OpenAI API key is not set in the environment variables.")
             raise ValueError("OpenAI API key is not set in the environment variables.")
-        self.llm = ChatOpenAI(openai_api_key=api_key, temperature=0,model="gpt-4o-mini",)
+        self.llm = ChatOpenAI(openai_api_key=api_key, temperature=0, model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"))
 
         # Initialize prompt templates
         self.document_chat_prompt = ChatPromptTemplate.from_messages([
