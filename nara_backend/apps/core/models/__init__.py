@@ -1,4 +1,4 @@
-"""Core models for the Nara backend application."""
+"""Core models for the Unstruct backend application."""
 
 from .action import Action
 from .asset import Asset

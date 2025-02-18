@@ -171,6 +171,7 @@ cython_debug/
 
 # Virtual Environment
 nara/
+unstruct/
 .env
 .venv
 env/
@@ -212,3 +213,4 @@ static/
 *.swp
 *.swo
 .DS_Store
+.run

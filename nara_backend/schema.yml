@@ -3284,7 +3284,7 @@ components:
     jwtCookieAuth:
       type: apiKey
       in: cookie
-      name: nara-app-auth
+      name: unstruct-app-auth
     jwtHeaderAuth:
       type: http
       scheme: bearer

@@ -1,4 +1,4 @@
-# Nara Backend Architecture Design
+# unstruct Backend Architecture Design
 
 ## 1. High-Level Architecture
 ```
@@ -35,13 +35,13 @@
 
 ### 2.3 Load Balancing
 - **Network Load Balancer (NLB)**
-  - Name: nara-nlb
+  - Name: unstruct-nlb
   - Type: TCP Load Balancer
   - Port: 8000
   - Internet-facing
 
 ### 2.4 Target Group
-- Name: nara-tg
+- Name: unstruct-tg
 - Protocol: TCP
 - Port: 8000
 - Health Check: TCP on port 8000
@@ -55,9 +55,9 @@
   - Subnet: subnet-03ab6d54ac71aa273 (us-east-2a)
 
 - **ECS Configuration**
-  - Cluster: nara-cluster
-  - Service: nara-service
-  - Task Definition: nara-backend:80
+  - Cluster: unstruct-cluster
+  - Service: unstruct-service
+  - Task Definition: unstruct-backend:80
   - Container Port: 8000 (static mapping)
 
 ### 2.6 Authentication

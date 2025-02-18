@@ -5,7 +5,7 @@ from .base import *  # noqa: F401 F403
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_NAME', default='nara_local'),
+        'NAME': env('DB_NAME', default='unstruct_local'),
         'USER': env('DB_USER', default='postgres'),
         'PASSWORD': env('DB_PASSWORD', default='postgres'),
         'HOST': env('DB_HOST', default='localhost'),

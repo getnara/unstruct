@@ -1,4 +1,4 @@
-"""Core models for the Nara backend application."""
+"""Core models for the Unstruct backend application."""
 
 from .action_view import ActionViewSet
 from .asset_view import AssetViewSet

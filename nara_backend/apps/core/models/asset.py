@@ -109,7 +109,7 @@ class Asset(NBaseWithOwnerModel):
 
     def get_file_path(self):
         """Get the local path or download the file if it's from an external source"""
-        local_path = f"/tmp/nara/assets/{self.id}/{self.name}"
+        local_path = f"/tmp/unstruct/assets/{self.id}/{self.name}"
         
         if self.upload_source == ASSET_UPLOAD_SOURCE.GOOGLE_DRIVE:
             return self._download_from_gdrive()
@@ -184,7 +184,7 @@ class Asset(NBaseWithOwnerModel):
             logger.info("Authentication successful")
             
             # Create a temporary directory for downloads
-            download_dir = f"/tmp/nara/gdrive/{self.id}"
+            download_dir = f"/tmp/unstruct/gdrive/{self.id}"
             os.makedirs(download_dir, exist_ok=True)
             logger.info(f"Created download directory: {download_dir}")
             
@@ -217,7 +217,7 @@ class Asset(NBaseWithOwnerModel):
             s3_service.authenticate()
             
             # Create a temporary directory for downloads
-            download_dir = f"/tmp/nara/s3/{self.id}"
+            download_dir = f"/tmp/unstruct/s3/{self.id}"
             os.makedirs(download_dir, exist_ok=True)
             
             file_info = s3_service.get_file_by_key(
@@ -238,7 +238,7 @@ class Asset(NBaseWithOwnerModel):
             dropbox_service.authenticate()
             
             # Create a temporary directory for downloads
-            download_dir = f"/tmp/nara/dropbox/{self.id}"
+            download_dir = f"/tmp/unstruct/dropbox/{self.id}"
             os.makedirs(download_dir, exist_ok=True)
             
             file_info = dropbox_service.get_file_by_id(

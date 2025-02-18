@@ -541,7 +541,7 @@ class AssetViewSet(OrganizationMixin, NBaselViewSet):
             # Clean up any temporary files
             try:
                 if instance.upload_source == ASSET_UPLOAD_SOURCE.GOOGLE_DRIVE:
-                    download_dir = f"/tmp/nara/gdrive/{instance.id}"
+                    download_dir = f"/tmp/unstruct/gdrive/{instance.id}"
                     if os.path.exists(download_dir):
                         import shutil
                         shutil.rmtree(download_dir)

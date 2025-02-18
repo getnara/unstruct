@@ -34,7 +34,7 @@ if ! pg_isready &> /dev/null; then
 fi
 
 # Create virtual environment if it doesn't exist
-VENV_DIR="nara"
+VENV_DIR="unstruct"
 if [ ! -d "$VENV_DIR" ]; then
     echo "Creating virtual environment..."
     python3.11 -m venv "$VENV_DIR" || handle_error "Failed to create virtual environment"
@@ -74,7 +74,7 @@ else
 fi
 
 # Validate required environment variables with default values
-DB_NAME=${DB_NAME:-nara_local}
+DB_NAME=${DB_NAME:-unstruct_local}
 DB_USER=${DB_USER:-postgres}
 DB_PASSWORD=${DB_PASSWORD:-postgres}
 DB_HOST=${DB_HOST:-localhost}

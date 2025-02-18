@@ -1,4 +1,4 @@
-# Nara Backend
+# Unstruct Backend
 
 ## Table of Contents
 1. [Project Overview](#project-overview)
@@ -17,7 +17,7 @@
 
 ## Project Overview
 
-Nara Backend is a Django-based REST API that serves as the backbone for an AI-powered document processing and task management system. The project is designed to handle various aspects of document analysis, task creation, and AI-driven information extraction.
+Unstruct Backend is a Django-based REST API that serves as the backbone for an AI-powered document processing and task management system. The project is designed to handle various aspects of document analysis, task creation, and AI-driven information extraction.
 
 The main purpose of this backend is to:
 1. Manage projects, tasks, and assets (documents)
@@ -27,7 +27,7 @@ The main purpose of this backend is to:
 
 ## System Architecture
 
-The Nara Backend is built using Django and Django Rest Framework, following a modular approach with multiple apps:
+The Unstruct Backend is built using Django and Django Rest Framework, following a modular approach with multiple apps:
 
 - `core`: Handles the main business logic and models
 - `agent_management`: Manages AI agent configurations and services
@@ -39,7 +39,7 @@ The project uses a PostgreSQL database for data persistence and integrates with 
 
 ### Core App
 
-The `core` app is the heart of the Nara Backend, containing the main models and business logic:
+The `core` app is the heart of the Unstruct Backend, containing the main models and business logic:
 
 - `Project`: Represents a collection of tasks and assets
 - `Task`: Represents a specific job to be performed on assets
@@ -87,8 +87,8 @@ Key files:
 
 2. Create and activate a virtual environment:
    ```
-   python3.11 -m venv nara
-   source nara/bin/activate  # On Windows, use `nara\Scripts\activate`
+   python3.11 -m venv unstruct
+   source unstruct/bin/activate  # On Windows, use `unstruct\Scripts\activate`
    ```
 
 3. Install dependencies:

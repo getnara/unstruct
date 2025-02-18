@@ -95,7 +95,7 @@ FRONTEND_URL = env.str('FRONTEND_URL', default='http://localhost:3000')
 
 # Application definition
 
-NARA_APPS = [
+UNSTRUCT_APPS = [
     "apps.common",
     "apps.core",
     "apps.agent_management",
@@ -118,7 +118,7 @@ INSTALLED_APPS = [
     "dj_rest_auth.registration",
     "corsheaders",
     'drf_spectacular',
-] + NARA_APPS
+] + UNSTRUCT_APPS
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -177,8 +177,8 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_NAME', default='nara_prod'),
-        'USER': env('DB_USER', default='naraadmin'),
+        'NAME': env('DB_NAME', default='unstruct_prod'),
+        'USER': env('DB_USER', default='unstructadmin'),
         'PASSWORD': env('DB_PASSWORD'),
         'HOST': env('DB_HOST'),
         'PORT': env('DB_PORT', default='5432'),
@@ -254,7 +254,7 @@ SIMPLE_JWT = {
 
 REST_AUTH = {
     "USE_JWT": True,
-    "JWT_AUTH_COOKIE": "nara-app-auth",
+    "JWT_AUTH_COOKIE": "unstruct-app-auth",
     "JWT_AUTH_REFRESH_COOKIE": "my-refresh-token",
 }
 

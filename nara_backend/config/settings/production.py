@@ -67,10 +67,10 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': env('DB_NAME', default='nara_prod'),
-            'USER': env('DB_USER', default='naraadmin'),
+            'NAME': env('DB_NAME', default='unstruct_prod'),
+            'USER': env('DB_USER', default='unstructadmin'),
             'PASSWORD': env('DB_PASSWORD'),
-            'HOST': env('DB_HOST', default='nara-prod.cbaoiyyw8szg.us-east-2.rds.amazonaws.com'),
+            'HOST': env('DB_HOST', default=''),
             'PORT': env('DB_PORT', default='5432'),
         }
     }

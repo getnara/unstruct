@@ -1,9 +1,9 @@
 version: '3'
 
 services:
-  nara-app-db:
+  unstruct-app-db:
     restart: always
-    container_name: nara-app-db
+    container_name: unstruct-app-db
     image: postgres:11
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
@@ -17,8 +17,8 @@ services:
       timeout: 5s
       retries: 5
 
-  nara-backend:
-    container_name: nara-backend
+  unstruct-backend:
+    container_name: unstruct-backend
     build:
       context: .
       dockerfile: DockerFile
@@ -27,7 +27,7 @@ services:
     ports:
       - "${DJANGO_PORT}:${DJANGO_PORT}"
     volumes:
-      - .:/nara-backend
+      - .:/unstruct-backend
     depends_on:
       web_app_db:
         condition: service_healthy
