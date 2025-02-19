@@ -1,5 +1,5 @@
 """
-WSGI config for nara_backend project.
+WSGI config for unstruct_backend project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

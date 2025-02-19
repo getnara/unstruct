@@ -82,7 +82,7 @@ Key files:
 1. Clone the repository:
    ```
    git clone <repository_url>
-   cd nara_backend
+   cd unstruct_backend
    ```
 
 2. Create and activate a virtual environment:

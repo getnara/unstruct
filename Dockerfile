@@ -18,19 +18,19 @@ ENV CXX="g++"
 WORKDIR /app
 
 # Copy the Django project and requirements
-COPY nara_backend /app/nara_backend/
+COPY unstruct_backend /app/unstruct_backend/
 
 # Install dependencies
 RUN pip install gunicorn
-RUN pip install -r /app/nara_backend/requirements.txt
+RUN pip install -r /app/unstruct_backend/requirements.txt
 
 # Make scripts executable
-RUN chmod +x /app/nara_backend/scripts/*.sh
+RUN chmod +x /app/unstruct_backend/scripts/*.sh
 
 EXPOSE 8000
-WORKDIR /app/nara_backend
+WORKDIR /app/unstruct_backend
 
 # Add health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 CMD curl -f http://localhost:8000/health/ || exit 1 
 
-ENTRYPOINT ["/bin/bash", "/app/nara_backend/scripts/run_server.sh"]
+ENTRYPOINT ["/bin/bash", "/app/unstruct_backend/scripts/run_server.sh"]

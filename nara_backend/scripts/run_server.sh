@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# Change to the directory containing manage.py (we're already in /app/nara_backend)
-cd /app/nara_backend
+# Change to the directory containing manage.py (we're already in /app/unstruct_backend)
+cd /app/unstruct_backend
 
 # Run migrations
 MIGRATION_FILE="scripts/run_migrations.sh"

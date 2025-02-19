@@ -1,5 +1,5 @@
 """
-ASGI config for nara_backend project.
+ASGI config for unstruct_backend project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
