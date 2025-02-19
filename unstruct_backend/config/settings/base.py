@@ -39,6 +39,9 @@ environ.Env.read_env(BASE_DIR.__str__() + "/../.env")
 # Raises django's ImproperlyConfigured exception if SECRET_KEY not in os.environ
 SECRET_KEY = env("SECRET_KEY")
 
+# Set Cognito authentication flag from environment variable ENABLE_COGNITO_AUTH (default True)
+ENABLE_COGNITO_AUTH = env.bool("ENABLE_COGNITO_AUTH", default=False)
+
 # Stripe Settings
 STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
 

@@ -12,6 +12,18 @@ class SimpleAuthentication(BaseAuthentication):
     """Authentication class that validates Cognito tokens and creates/gets users"""
     
     def authenticate(self, request):
+        if not getattr(settings, "ENABLE_COGNITO_AUTH", False):
+            logger.debug("Cognito auth is disabled, bypassing authentication.")
+            # Return an in-memory dummy bypass user (not saved in the database).
+            bypass_user = User(
+                id="00000000-0000-0000-0000-000000000001",  # valid UUID string
+                email="bypass@example.com",
+                username="bypass",
+                is_active=True
+            )
+            logger.debug(f"Returning in-memory bypass user: {bypass_user}")
+            return (bypass_user, None)
+        
         # Get the token from the Authorization header
         auth_header = request.headers.get('Authorization')
         if not auth_header:
