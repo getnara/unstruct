@@ -102,6 +102,7 @@ class TaskProcessor:
         base_key = f"task_results/{task.id}/results_{timestamp}"
         
         # Store JSON version
+        presigned_url = None
         try:
             if settings.AWS_STORAGE_BUCKET_NAME:
                 json_key = f"{base_key}.json"

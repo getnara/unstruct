@@ -7,10 +7,15 @@ logger = logging.getLogger(__name__)
 
 class StripeService:
     def __init__(self):
-        stripe.api_key = settings.STRIPE_SECRET_KEY
+        self.api_key = settings.STRIPE_SECRET_KEY
+        stripe.api_key = self.api_key
 
     def get_subscription_status_by_email(self, email):
         """Get subscription status for a customer by email"""
+        if not self.api_key:
+            logger.info(f"Stripe API key is empty. Skipping subscription status check for email: {email}")
+            return None
+
         try:
             logger.info(f"Checking subscription status for email: {email}")
             
@@ -43,6 +48,10 @@ class StripeService:
 
     def get_subscription_info_by_email(self, email):
         """Get subscription period information for a customer by email"""
+        if not self.api_key:
+            logger.info(f"Stripe API key is empty. Skipping subscription info retrieval for email: {email}")
+            return None
+
         try:
             logger.info(f"Getting subscription info for email: {email}")
             
@@ -90,6 +99,10 @@ class StripeService:
 
     def get_subscription_type_by_email(self, email):
         """Get subscription type for a customer by email"""
+        if not self.api_key:
+            logger.info(f"Stripe API key is empty. Skipping subscription type check for email: {email}")
+            return 'free'
+
         try:
             logger.info(f"Checking subscription type for email: {email}")
             

@@ -43,7 +43,7 @@ SECRET_KEY = env("SECRET_KEY")
 ENABLE_COGNITO_AUTH = env.bool("ENABLE_COGNITO_AUTH", default=False)
 
 # Stripe Settings
-STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
+STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY', default='')
 
 # Subscription Plan Names - Configurable through env
 SUBSCRIPTION_PLAN_NAMES = {
@@ -182,8 +182,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': env('DB_NAME', default='unstruct_prod'),
         'USER': env('DB_USER', default='unstructadmin'),
-        'PASSWORD': env('DB_PASSWORD'),
-        'HOST': env('DB_HOST'),
+        'PASSWORD': env('DB_PASSWORD', default=''),
+        'HOST': env('DB_HOST', default=''),
         'PORT': env('DB_PORT', default='5432'),
     }
 }
@@ -265,15 +265,15 @@ REST_AUTH = {
 GOOGLE_DRIVE_SERVICE_ACCOUNT = None  # This will be overridden by environment-specific settings
 GOOGLE_DRIVE_CREDENTIALS = {
     'token_uri': 'https://oauth2.googleapis.com/token',
-    'client_id': env('GOOGLE_CLIENT_ID'),
-    'client_secret': env('GOOGLE_CLIENT_SECRET'),
+    'client_id': env('GOOGLE_CLIENT_ID', default=''),
+    'client_secret': env('GOOGLE_CLIENT_SECRET', default=''),
     'scopes': ['https://www.googleapis.com/auth/drive.readonly']
 }
 
 # AWS Cognito Settings
-USER_POOL_ID = env('USER_POOL_ID')
-AWS_REGION = env('AWS_REGION')
-USER_POOL_CLIENT_ID = env('USER_POOL_CLIENT_ID')
+USER_POOL_ID = env('USER_POOL_ID', default='')
+AWS_REGION = env('AWS_REGION', default='')
+USER_POOL_CLIENT_ID = env('USER_POOL_CLIENT_ID', default='')
 
 # Logging configuration
 
@@ -343,9 +343,9 @@ LOGGING = {
 
 # Add these configurations
 AI_MODEL = env("AI_MODEL", default="Gemini") # or other models when integrated
-OPENAI_API_KEY = env("OPENAI_API_KEY")
+OPENAI_API_KEY = env("OPENAI_API_KEY", default='')
 
-GEMINI_API_KEY = env("GEMINI_API_KEY")
+GEMINI_API_KEY = env("GEMINI_API_KEY", default='')
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
@@ -366,8 +366,8 @@ CORS_ALLOW_HEADERS = [
 
 
 # Google OAuth Settings
-GOOGLE_CLIENT_ID = env("GOOGLE_CLIENT_ID")
-GOOGLE_CLIENT_SECRET = env("GOOGLE_CLIENT_SECRET")
+GOOGLE_CLIENT_ID = env("GOOGLE_CLIENT_ID", default='')
+GOOGLE_CLIENT_SECRET = env("GOOGLE_CLIENT_SECRET", default='')
 
 # Session Settings
 SESSION_COOKIE_SECURE = False
