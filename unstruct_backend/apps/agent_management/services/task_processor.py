@@ -102,36 +102,40 @@ class TaskProcessor:
         base_key = f"task_results/{task.id}/results_{timestamp}"
         
         # Store JSON version
-        json_key = f"{base_key}.json"
-        self.s3_client.put_object(
-            Bucket=settings.AWS_STORAGE_BUCKET_NAME,
-            Key=json_key,
-            Body=json.dumps(full_results),
-            ContentType='application/json'
-        )
-        
-        # Convert and store CSV version
-        csv_key = f"{base_key}.csv"
-        csv_content = self._convert_to_csv(full_results)
-        self.s3_client.put_object(
-            Bucket=settings.AWS_STORAGE_BUCKET_NAME,
-            Key=csv_key,
-            Body=csv_content,
-            ContentType='text/csv'
-        )
+        try:
+            if settings.AWS_STORAGE_BUCKET_NAME:
+                json_key = f"{base_key}.json"
+                self.s3_client.put_object(
+                    Bucket=settings.AWS_STORAGE_BUCKET_NAME,
+                    Key=json_key,
+                    Body=json.dumps(full_results),
+                    ContentType='application/json'
+                )
+                
+                # Convert and store CSV version
+                csv_key = f"{base_key}.csv"
+                csv_content = self._convert_to_csv(full_results)
+                self.s3_client.put_object(
+                    Bucket=settings.AWS_STORAGE_BUCKET_NAME,
+                    Key=csv_key,
+                    Body=csv_content,
+                    ContentType='text/csv'
+                )
 
-        # Generate a pre-signed URL for the CSV file
-        presigned_url = self.s3_client.generate_presigned_url(
-            'get_object',
-            Params={
-                'Bucket': settings.AWS_STORAGE_BUCKET_NAME,
-                'Key': csv_key
-            },
-            ExpiresIn=604800  # URL expires in 7 days (7 * 24 * 60 * 60 seconds)
-        )
+                # Generate a pre-signed URL for the CSV file
+                presigned_url = self.s3_client.generate_presigned_url(
+                    'get_object',
+                    Params={
+                        'Bucket': settings.AWS_STORAGE_BUCKET_NAME,
+                        'Key': csv_key
+                    },
+                    ExpiresIn=604800  # URL expires in 7 days (7 * 24 * 60 * 60 seconds)
+                )
 
-        # Update task with results URL and properly serialized preview results
-        task.result_file_url = presigned_url
+                # Update task with results URL and properly serialized preview results
+                task.result_file_url = presigned_url
+        except Exception as e:
+            pass
         task.process_results = json.dumps(preview_results)  # Properly serialize as JSON
         task.save()
 

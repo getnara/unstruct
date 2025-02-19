@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 import os
 import logging
+logger = logging.getLogger(__name__)
 import traceback
 from django.conf import settings
 
@@ -27,24 +28,31 @@ class AssetViewSet(OrganizationMixin, NBaselViewSet):
     def get_queryset(self):
         return super().get_queryset().filter(organization=self.get_organization())
 
-    @action(detail=False, methods=["post"])
+    @action(detail=True, methods=["post"])
     def create_assets_for_project(self, request):
         files = request.FILES.getlist("files")
         project_id = request.data.get("project_id")
-
+        
+        # Logging the received project_id and number of files
+        logger.debug(f"create_assets_for_project: Received request for project_id: {project_id} with {len(files)} file(s).")
+        
         if not files:
+            logger.error("No files provided in the request.")
             return Response({"error": "No files provided"}, status=status.HTTP_400_BAD_REQUEST)
 
         if not project_id:
+            logger.error("Project ID not provided in the request.")
             return Response({"error": "Project ID is required"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             project = Project.objects.get(id=project_id)
         except Project.DoesNotExist:
+            logger.error(f"Project not found for project_id: {project_id}")
             return Response({"error": "Project not found"}, status=status.HTTP_404_NOT_FOUND)
 
         assets = []
         for file in files:
+            logger.debug(f"Processing file: {file.name}")
             asset = Asset(
                 name=file.name,
                 description=f"Uploaded file: {file.name}",
@@ -55,10 +63,18 @@ class AssetViewSet(OrganizationMixin, NBaselViewSet):
             asset.save()
 
             # Save the file using Django's default file storage
-            file_path = default_storage.save(f"assets/{asset.id}/{file.name}", file)
-            asset.url = default_storage.url(file_path)
-            asset.save()
 
+            local_path = f"/tmp/unstruct/assets/{asset.id}/{file.name}"
+            os.makedirs(os.path.dirname(local_path), exist_ok=True)  # Ensure the directory exists
+            with open(local_path, 'wb') as destination:
+                for chunk in file.chunks():
+                    destination.write(chunk)
+            asset.url = local_path  # Update the URL accordingly
+            asset.save()
+            logger.debug(f"Saved asset id: {asset.id}; file_path: {local_path}; url: {asset.url}")
+            assets.append(asset)
+
+        logger.debug(f"Finished processing {len(assets)} assets for project_id: {project_id}")
         serializer = self.get_serializer(assets, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
