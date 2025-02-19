@@ -13,10 +13,6 @@ DATABASES = {
     }
 }
 
-# Force set the STRIPE_SECRET_KEY if not found
-if not os.getenv('STRIPE_SECRET_KEY'):
-    os.environ['STRIPE_SECRET_KEY'] = 'sk_test_xgs7c622Jl8F8DZl0x8Vcyty'
-
 # SECURITY WARNING: don't run with debug turned on in production!
 
 DEBUG = True
