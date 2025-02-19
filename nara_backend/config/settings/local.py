@@ -41,5 +41,5 @@ GOOGLE_DRIVE_SERVICE_ACCOUNT = {
 }
 
 # AWS S3 Configuration
-AWS_STORAGE_BUCKET_NAME = "naradashboardf031fb61e2b342a7b2bbeabad07a2a46edc15-prod"
+AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
 AWS_S3_REGION = "us-east-2"
