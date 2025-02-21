@@ -11,10 +11,10 @@ gunicorn==21.2.0
 
 # AI and ML Dependencies
 openai==1.48.0
-langchain-core==0.1.30
-langchain-community==0.0.28
-langchain==0.1.12
-langchain-experimental==0.0.52
+langchain-core>=0.1.30
+langchain-community>=0.0.28
+langchain>=0.1.12
+langchain-experimental>=0.0.52
 langsmith==0.1.128
 transformers==4.45.0
 sentence-transformers==2.5.1
