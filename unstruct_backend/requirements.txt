@@ -27,7 +27,6 @@ lancedb==0.15.0
 # ML Framework
 torch==2.2.0
 torchvision==0.17.0
-tensorboard==2.15.1
 
 # Data Processing
 numpy==1.26.4
