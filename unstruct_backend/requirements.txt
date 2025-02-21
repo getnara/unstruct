@@ -19,7 +19,7 @@ langsmith==0.1.128
 transformers==4.45.0
 sentence-transformers==2.5.1
 deepgram-sdk==3.7.6
-open_clip_torch==2.20.0
+open_clip_torch==2.30.0
 ftfy==6.1.1
 regex==2023.10.3
 lancedb==0.15.0
