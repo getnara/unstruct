@@ -81,3 +81,4 @@ dj-database-url==2.1.0
 
 # Database
 psycopg2-binary==2.9.9
+nest-asyncio==1.6.0
