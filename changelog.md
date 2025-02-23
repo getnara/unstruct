@@ -1,5 +1,10 @@
 # Changelog
 
+## UI Updates
+Simplified the marketing site hero section.
+
+- Removed "Try for Free" button from hero section to focus on demo bookings
+
 ## Project Messaging and Open Source Announcement
 Updated project messaging to better reflect our mission and open-source focus.
 
