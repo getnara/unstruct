@@ -1,5 +1,24 @@
 # Changelog
 
+## Project Messaging and Open Source Announcement
+Updated project messaging to better reflect our mission and open-source focus.
+
+- Revised project overview to position Unstruct as "Supabase for AI"
+- Added detailed explanation of core AI backend components
+- Added "Why Open Source?" section explaining our mission
+- Added comprehensive feature table showcasing key capabilities
+- Updated project purpose to emphasize community and infrastructure focus
+
+## Documentation Updates
+Improved setup instructions and added contribution guidelines.
+
+- Added Quick Start section with run_local.sh script instructions
+- Enhanced manual setup instructions with PostgreSQL requirements
+- Improved code block formatting with bash syntax highlighting
+- Added comprehensive CONTRIBUTING.md guide
+- Added Contributing section to README with quick start guide
+- Added community links and contribution process
+
 ## Authentication and License Updates
 Improved authentication handling and updated license.
 

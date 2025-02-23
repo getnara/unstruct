@@ -12,18 +12,44 @@
 6. [Authentication and Authorization](#authentication-and-authorization)
 7. [Database Models](#database-models)
 8. [AI Integration](#ai-integration)
-9. [Best Practices](#best-practices)
-10. [FAQ](#faq)
+9. [Contributing](#contributing)
+10. [Best Practices](#best-practices)
+11. [FAQ](#faq)
 
 ## Project Overview
 
-Unstruct Backend is a Django-based REST API that serves as the backbone for an AI-powered document processing and task management system. The project is designed to handle various aspects of document analysis, task creation, and AI-driven information extraction.
+Unstruct Backend is a Django-based REST API that serves as the "Supabase for AI" - an open-source backbone for AI-powered applications. After observing a common pattern across AI startups repeatedly building the same backend components, we created Unstruct to eliminate this redundancy.
+
+The project provides four essential components that every modern AI application needs:
+1. **Data Connectors**: Pull data from various sources (files, cloud buckets, APIs)
+2. **Vector Database Integration**: Store and retrieve embeddings for semantic search
+3. **LLM Integration**: Connect with OpenAI, local open-source models, or other providers
+4. **API Interface**: Enable seamless interaction for end-users and client applications
+
+### Why Open Source?
+
+We believe powerful AI infrastructure shouldn't be hidden behind paywalls or locked into proprietary systems. By open-sourcing Unstruct under the MIT license, we aim to:
+- Save development teams from reinventing the same backend pipeline
+- Build a vibrant community that improves the infrastructure together
+- Enable flexible customization for unique AI workflows
+- Provide a foundation built on proven technologies (Django/PostgreSQL)
+
+### Core Features
+
+| Feature | Description |
+|---------|-------------|
+| Data Connectors | Upload files now, with connectors for S3, Google Drive, etc. on the way |
+| Vector & DB Support | Integrate with vector DBs or store data in PostgreSQL for flexible semantic search |
+| LLM Model Integration | OpenAI built-in, easily extended for other models (image, audio, custom ML) |
+| Action Definition | Define tasks to extract, analyze, or transform data using your chosen AI models |
+| API Access | RESTful endpoints so your front-end apps can interact seamlessly with processed data |
+| Open Source (MIT) | Fork it, tailor it, and share improvements with the community—no license hassles |
 
 The main purpose of this backend is to:
-1. Manage projects, tasks, and assets (documents)
-2. Integrate with AI services for document analysis
-3. Provide a robust API for frontend applications to interact with the system
-4. Handle user authentication and authorization
+1. Provide a complete AI backend infrastructure that eliminates repetitive plumbing
+2. Enable seamless integration with various data sources and AI models
+3. Offer a robust API for building user-facing AI applications
+4. Foster an open-source community around AI infrastructure
 
 ## System Architecture
 
@@ -79,20 +105,48 @@ Key files:
 
 ## Setup and Installation
 
+### Quick Start (Recommended)
+
+The easiest way to set up and run the project locally is using our setup script:
+
 1. Clone the repository:
-   ```
+   ```bash
    git clone <repository_url>
-   cd unstruct_backend
+   cd unstruct
+   ```
+
+2. Run the local setup script:
+   ```bash
+   ./scripts/run_local.sh
+   ```
+
+The script will automatically:
+- Check for required dependencies (Python 3.11, PostgreSQL)
+- Create and activate a virtual environment
+- Install project dependencies
+- Set up environment variables
+- Create and configure the database
+- Run migrations
+- Start the development server
+
+### Manual Setup
+
+If you prefer to set up manually or the script doesn't work for your environment:
+
+1. Clone the repository:
+   ```bash
+   git clone <repository_url>
+   cd unstruct
    ```
 
 2. Create and activate a virtual environment:
-   ```
+   ```bash
    python3.11 -m venv unstruct
    source unstruct/bin/activate  # On Windows, use `unstruct\Scripts\activate`
    ```
 
 3. Install dependencies:
-   ```
+   ```bash
    pip3.11 install -r requirements.txt
    ```
 
@@ -100,17 +154,21 @@ Key files:
    - Copy `.env.sample` to `.env`
    - Fill in the required variables in `.env`
 
-5. Run migrations:
-   ```
+5. Set up PostgreSQL database:
+   - Create a database named 'unstruct_local'
+   - Configure database settings in `.env`
+
+6. Run migrations:
+   ```bash
    python3.11 manage.py migrate
    ```
 
-6. Start the development server:
-   ```
+7. Start the development server:
+   ```bash
    python3.11 manage.py runserver
    ```
 
-Note: This project requires Python 3.11. Make sure you have it installed before proceeding with the setup.
+Note: This project requires Python 3.11 and PostgreSQL. Make sure you have them installed before proceeding with either setup method.
 
 ## API Endpoints
 
@@ -168,6 +226,35 @@ result = service.extract_response_from_task(task)
 
 ```
 
+## Contributing
+
+We welcome contributions to Unstruct! Whether you're fixing bugs, adding new features, or improving documentation, your help is appreciated.
+
+### Quick Start for Contributors
+
+1. Fork the repository
+2. Clone your fork:
+   ```bash
+   git clone <your-fork-url>
+   cd unstruct
+   ```
+3. Set up development environment:
+   ```bash
+   ./scripts/run_local.sh
+   ```
+4. Create a new branch:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+5. Make your changes and commit them using [Conventional Commits](https://www.conventionalcommits.org/)
+6. Push to your fork and submit a pull request
+
+For detailed guidelines, please see our [Contributing Guide](CONTRIBUTING.md).
+
+### Community
+- Join our [Discord Community](https://discord.gg/unstruct) for discussions
+- Follow us on [Twitter](https://twitter.com/unstruct) for updates
+- Star the repository to show your support!
 
 ## Best Practices
 
