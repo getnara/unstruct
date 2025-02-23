@@ -14,14 +14,22 @@ class SimpleAuthentication(BaseAuthentication):
     def authenticate(self, request):
         if not getattr(settings, "ENABLE_COGNITO_AUTH", False):
             logger.debug("Cognito auth is disabled, bypassing authentication.")
-            # Return an in-memory dummy bypass user (not saved in the database).
-            bypass_user = User(
-                id="00000000-0000-0000-0000-000000000001",  # valid UUID string
-                email="bypass@example.com",
-                username="bypass",
-                is_active=True
-            )
-            logger.debug(f"Returning in-memory bypass user: {bypass_user}")
+            # Try to get existing bypass user or create a new one
+            bypass_user = User.objects.filter(
+                id="00000000-0000-0000-0000-000000000001"
+            ).first()
+            
+            if not bypass_user:
+                bypass_user = User.objects.create(
+                    id="00000000-0000-0000-0000-000000000001",  # valid UUID string
+                    email="bypass@example.com",
+                    username="bypass",
+                    is_active=True
+                )
+                logger.debug(f"Created new bypass user: {bypass_user}")
+            else:
+                logger.debug(f"Using existing bypass user: {bypass_user}")
+            
             return (bypass_user, None)
         
         # Get the token from the Authorization header
