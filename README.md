@@ -252,8 +252,7 @@ We welcome contributions to Unstruct! Whether you're fixing bugs, adding new fea
 For detailed guidelines, please see our [Contributing Guide](CONTRIBUTING.md).
 
 ### Community
-- Join our [Discord Community](https://discord.gg/unstruct) for discussions
-- Follow us on [Twitter](https://twitter.com/unstruct) for updates
+- Join our [Discord Community](https://discord.gg/GKZMkF7fua) for discussions
 - Star the repository to show your support!
 
 ## Best Practices
