@@ -14,15 +14,20 @@ ENV CFLAGS="-fPIC"
 ENV CXXFLAGS="-fPIC -std=c++11"
 ENV CC="gcc"
 ENV CXX="g++"
+ENV PIP_NO_CACHE_DIR=0
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 
 WORKDIR /app
 
-# Copy the Django project and requirements
-COPY unstruct_backend /app/unstruct_backend/
+# Copy only requirements first to leverage Docker cache
+COPY unstruct_backend/requirements.txt /app/requirements.txt
 
-# Install dependencies
-RUN pip install gunicorn
-RUN pip install -r /app/unstruct_backend/requirements.txt
+# Install dependencies with optimizations
+RUN pip install --no-cache-dir gunicorn setuptools && \
+    pip install --no-cache-dir --use-pep517 -r /app/requirements.txt
+
+# Copy the rest of the application
+COPY unstruct_backend /app/unstruct_backend/
 
 # Make scripts executable
 RUN chmod +x /app/unstruct_backend/scripts/*.sh
