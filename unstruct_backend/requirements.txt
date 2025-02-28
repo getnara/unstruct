@@ -16,21 +16,17 @@ langchain-community>=0.0.28
 langchain>=0.1.12
 langchain-experimental>=0.0.52
 langsmith==0.1.128
-llama-index-core==0.11.13.post1
-llama-index-readers-smart-pdf-loader==0.2.0
-llama-parse==0.5.7
 transformers==4.45.0
 sentence-transformers==2.5.1
 deepgram-sdk==3.7.6
-open_clip_torch==2.20.0
+open_clip_torch==2.30.0
 ftfy==6.1.1
 regex==2023.10.3
 lancedb==0.15.0
 
 # ML Framework
-torch>=2.2.0
-torchvision>=0.17.0
-tensorboard==2.15.1
+torch==2.2.0
+torchvision==0.17.0
 
 # Data Processing
 numpy==1.26.4
@@ -48,10 +44,20 @@ moviepy==1.0.3
 
 # Cloud Services
 boto3==1.35.34
+
+# Google packages with fixed versions
+google-api-core==2.24.0
 google-auth==2.27.0
 google-auth-oauthlib==1.2.0
 google-auth-httplib2==0.2.0
 google-api-python-client==2.120.0
+google-generativeai==0.8.4
+googleapis-common-protos==1.67.0
+grpcio==1.60.0
+grpcio-status==1.60.0
+proto-plus==1.22.3
+
+# Other Cloud Services
 dropbox==11.36.2
 stripe==7.11.0
 pycognito==2024.5.1
@@ -75,6 +81,4 @@ dj-database-url==2.1.0
 
 # Database
 psycopg2-binary==2.9.9
-
-django-environ==0.11.2
-google.generativeai==0.8.4
+nest-asyncio==1.6.0
