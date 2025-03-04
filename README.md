@@ -1,4 +1,4 @@
-# Unstruct Backend
+# Unstruct: Intelligent Document Data Extraction
 
 ## Table of Contents
 1. [Project Overview](#project-overview)
@@ -18,54 +18,113 @@
 
 ## Project Overview
 
-Unstruct Backend is a Django-based REST API that serves as the "Supabase for AI" - an open-source backbone for AI-powered applications. After observing a common pattern across AI startups repeatedly building the same backend components, we created Unstruct to eliminate this redundancy.
+Unstruct is a powerful open-source data extraction platform that pulls structured information from unstructured documents. Built for developers and data teams, Unstruct eliminates the tedious work of manually extracting data from invoices, reports, and other business documents.
 
-The project provides four essential components that every modern AI application needs:
-1. **Data Connectors**: Pull data from various sources (files, cloud buckets, APIs)
-2. **Vector Database Integration**: Store and retrieve embeddings for semantic search
-3. **LLM Integration**: Connect with OpenAI, local open-source models, or other providers
-4. **API Interface**: Enable seamless interaction for end-users and client applications
+### The Data Extraction Challenge
+
+Organizations struggle with extracting usable data from documents that come in various formats:
+
+* **Inconsistent Layouts**: Every vendor uses different invoice formats
+* **Mixed Content Types**: Documents contain text, tables, and images that all need extraction
+* **Hidden Relationships**: Critical data points are scattered across multiple pages
+* **Format Variations**: Information arrives as PDFs, scanned images, or digital documents
+
+Unstruct solves these challenges by providing a unified extraction pipeline that converts document chaos into clean, structured data.
+
+### Key Extraction Capabilities
+
+#### Field Extraction
+* Extract specific data points like invoice numbers, dates, and amounts
+* Identify and extract named entities like people, organizations, and locations
+* Capture metadata including document type, origin, and processing history
+
+#### Table Extraction
+* Convert complex tables into structured data formats
+* Maintain header-to-data relationships in multi-level tables
+* Handle merged cells, nested tables, and irregular layouts
+* Extract tabular data even when formatting is inconsistent
+
+#### Relationship Mapping
+* Connect related data points across document sections
+* Establish parent-child relationships between extracted entities
+* Map line items to their corresponding headers and totals
+* Link extracted data to source locations for verification
+
+Unstruct delivers extracted data in clean, structured formats ready for database storage, API transmission, or direct use in applications. Each extraction includes confidence scores and source references for validation.
+
+### Supported Document Types
+* Business Documents: Invoices, purchase orders, receipts, contracts
+* Forms: Applications, surveys, questionnaires, enrollment forms
+* Reports: Financial statements, compliance documents, technical reports
+* Identity Documents: IDs, licenses, certificates, credentials
 
 ### Why Open Source?
 
-We believe powerful AI infrastructure shouldn't be hidden behind paywalls or locked into proprietary systems. By open-sourcing Unstruct under the MIT license, we aim to:
-- Save development teams from reinventing the same backend pipeline
-- Build a vibrant community that improves the infrastructure together
-- Enable flexible customization for unique AI workflows
-- Provide a foundation built on proven technologies (Django/PostgreSQL)
+We built Unstruct as open-source because data extraction should be:
+- Accessible to organizations of all sizes, not just enterprises with large budgets
+- Transparent in how it processes sensitive business documents
+- Customizable for specific industry needs and document types
+- Community-driven to support the widest range of extraction scenarios
 
 ### Core Features
 
 | Feature | Description |
 |---------|-------------|
-| Data Connectors | Upload files now, with connectors for S3, Google Drive, etc. on the way |
-| Vector & DB Support | Integrate with vector DBs or store data in PostgreSQL for flexible semantic search |
-| LLM Model Integration | OpenAI built-in, easily extended for other models (image, audio, custom ML) |
-| Action Definition | Define tasks to extract, analyze, or transform data using your chosen AI models |
-| API Access | RESTful endpoints so your front-end apps can interact seamlessly with processed data |
-| Open Source (MIT) | Fork it, tailor it, and share improvements with the community—no license hassles |
+| Targeted Field Extraction | Pull specific data points from documents with high precision |
+| Intelligent Table Recognition | Convert complex tables into structured data formats |
+| Multi-Format Support | Process PDFs, images, and text documents with a single API |
+| Confidence Scoring | Get reliability metrics for each extracted data point |
+| Source Referencing | Link extracted data to its original location in the document |
+| Extraction Templates | Create reusable templates for common document types |
+| Batch Processing | Extract data from multiple documents in parallel |
 
-The main purpose of this backend is to:
-1. Provide a complete AI backend infrastructure that eliminates repetitive plumbing
-2. Enable seamless integration with various data sources and AI models
-3. Offer a robust API for building user-facing AI applications
-4. Foster an open-source community around AI infrastructure
+The main purpose of Unstruct is to:
+1. Transform document-trapped data into structured, usable information
+2. Eliminate manual data entry and human error in document processing
+3. Provide developers with a reliable API for document data extraction
+4. Enable automation of document-heavy business processes
 
 ## System Architecture
 
-The Unstruct Backend is built using Django and Django Rest Framework, following a modular approach with multiple apps:
+Unstruct is built as a modular data extraction platform with several key components:
 
-- `core`: Handles the main business logic and models
-- `agent_management`: Manages AI agent configurations and services
-- `common`: Provides shared utilities and base models
+- `core`: Contains the extraction engine, document processors, and field extractors
+- `agent_management`: Manages AI models that power the extraction capabilities
+- `common`: Provides shared utilities and base components
 
-The project uses a PostgreSQL database for data persistence and integrates with external AI services for document processing.
+The architecture follows a multi-stage extraction pipeline:
+
+1. **Document Ingestion**: 
+   - Upload documents via API or import from storage services
+   - Convert documents to normalized formats for processing
+   - Apply pre-processing to enhance document quality
+
+2. **Document Analysis**:
+   - Identify document type and structure
+   - Detect regions of interest (tables, form fields, headers)
+   - Create a spatial map of document elements
+
+3. **Data Extraction**:
+   - Apply specialized extractors for different data types
+   - Extract text fields, tables, and form elements
+   - Maintain spatial relationships between extracted elements
+
+4. **Post-Processing**:
+   - Calculate confidence scores for each extraction
+   - Format data according to schema definitions
+
+5. **Result Delivery**:
+   - Store extraction results in structured formats
+   - Provide API access to extracted data
+   - Generate export files in various formats (JSON, CSV, Excel)
+
+The system uses PostgreSQL for data storage and integrates with AI services to power the extraction capabilities. All components are designed to be horizontally scalable for high-volume document processing.
 
 ## Key Components
 
 ### Core App
 
-The `core` app is the heart of the Unstruct Backend, containing the main models and business logic:
+The `core` app contains the main extraction engine and document processing components:
 
 - `Project`: Represents a collection of tasks and assets
 - `Task`: Represents a specific job to be performed on assets
